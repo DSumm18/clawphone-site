@@ -241,35 +241,24 @@
         </div>
         
         <div class="card">
-            <h2>👀 View the Code (Transparency)</h2>
+            <h2>👀 What Happens (Transparency)</h2>
             <p style="color: var(--text-muted); margin-bottom: 15px;">
-                We believe in transparency. Here's exactly what this skill does - no hidden code:
+                We believe in transparency. Here's exactly what this skill does:
             </p>
             <div class="code-block">
-                <button class="copy-btn" onclick="copySkillCode(this)">📋 Copy All</button>
-                <pre><span class="comment"># ClawPhone Connect Skill</span>
+                <pre><span class="comment"># When you say "connect clawphone" to your bot:</span>
 
-<span class="keyword">Trigger:</span> When user says "connect clawphone"
+<span class="keyword">1.</span> Your bot contacts the ClawPhone server
+<span class="keyword">2.</span> A unique 8-digit code is generated (expires in 5 mins)
+<span class="keyword">3.</span> Your bot tells you the code
+<span class="keyword">4.</span> You enter it in the ClawPhone app
+<span class="keyword">5.</span> App connects directly to YOUR bot
 
-<span class="keyword">Action:</span>
-1. Call the ClawPhone API to generate a code
-2. Tell the user the code
-
-<span class="keyword">API Call:</span>
-POST https://clawphone-site.vercel.app/api/connect/generate
-Body: {
-  <span class="string">"bot_url"</span>: "your-bot-public-url",
-  <span class="string">"gateway_token"</span>: "your-gateway-token",
-  <span class="string">"bot_name"</span>: "your-bot-name"
-}
-
-<span class="keyword">Response Format:</span>
-🔗 <span class="string">ClawPhone Connection Code</span>
-
-Your code is: <span class="string">**[8-digit code]**</span>
-
-Open the ClawPhone app and enter this code.
-It expires in 5 minutes.</pre>
+<span class="comment"># What data is shared?</span>
+<span class="string">✓</span> Your bot's URL (so the app knows where to connect)
+<span class="string">✓</span> Your bot's name (shown in the app)
+<span class="string">✗</span> We never see your messages or conversations
+<span class="string">✗</span> No personal data is stored</pre>
             </div>
         </div>
         
@@ -299,29 +288,7 @@ It expires in 5 minutes.</pre>
             setTimeout(() => icon.textContent = '📋', 2000);
         }
         
-        function copySkillCode(btn) {
-            const code = `# ClawPhone Connect Skill
-
-When user says "connect clawphone":
-
-1. Call the ClawPhone API:
-curl -s -X POST https://clawphone-site.vercel.app/api/connect/generate \\
-  -H "Content-Type: application/json" \\
-  -d '{"bot_url":"YOUR_BOT_URL","gateway_token":"YOUR_TOKEN","bot_name":"YOUR_BOT_NAME"}'
-
-2. Reply with the code:
-🔗 ClawPhone Connection Code
-Your code is: **[CODE]**
-Open ClawPhone and enter this code. Expires in 5 minutes.`;
-            
-            navigator.clipboard.writeText(code);
-            btn.textContent = '✓ Copied!';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.textContent = '📋 Copy All';
-                btn.classList.remove('copied');
-            }, 2000);
-        }
+        // No copy function needed anymore - transparency section is informational
     </script>
 </body>
 </html>
