@@ -3,88 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClawPhone - Voice Chat with Your AI</title>
+    <title>ClawPhone - Talk to Your AI in Character Voices</title>
+    <meta name="description" content="Voice chat with your personal AI assistant in 20+ fun character voices. Works on iPhone and Apple Watch.">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦞</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e55a2b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a24;
+            --text: #ffffff;
+            --text-muted: #9ca3af;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a20 50%, #0a0a0f 100%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
         }
-        .logo { font-size: 100px; margin-bottom: 20px; }
-        h1 { font-size: 3rem; margin-bottom: 10px; }
-        .tagline { font-size: 1.3rem; color: #9CA3AF; margin-bottom: 40px; }
-        .features {
+        
+        /* Navigation */
+        nav {
             display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .nav-logo span { font-size: 2rem; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+        
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary), #ff8f5a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle {
+            font-size: 1.4rem;
+            color: var(--text-muted);
             margin-bottom: 40px;
         }
-        .feature {
-            background: rgba(139, 92, 246, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            padding: 20px 30px;
-            border-radius: 16px;
-        }
-        .feature-icon { font-size: 40px; margin-bottom: 10px; }
-        .feature-text { color: #9CA3AF; }
-        .download-btn {
-            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             padding: 18px 50px;
             border-radius: 30px;
             text-decoration: none;
             font-size: 1.2rem;
             font-weight: bold;
-            transition: transform 0.2s;
-            display: inline-block;
-            margin-bottom: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
         }
-        .download-btn:hover { transform: scale(1.05); }
-        .credit {
-            color: #6B7280;
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.4);
+        }
+        .app-badges {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .app-badge {
+            background: var(--bg-card);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        /* Features */
+        .features {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 53, 0.1);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            color: var(--text-muted);
+        }
+        
+        /* Voices Section */
+        .voices {
+            padding: 80px 20px;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 50%, var(--bg-dark) 100%);
+        }
+        .voices h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .voices .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 50px;
+        }
+        .voice-categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .voice-tag {
+            background: var(--bg-card);
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            font-size: 1rem;
+        }
+        .voice-tag span {
+            margin-right: 8px;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        .step-content p {
+            color: var(--text-muted);
+        }
+        
+        /* Pricing */
+        .pricing {
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .pricing h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .pricing-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 20px;
+            width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .pricing-card .price span {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+        .pricing-card ul {
+            list-style: none;
+            margin: 30px 0;
+            text-align: left;
+        }
+        .pricing-card li {
+            padding: 10px 0;
+            color: var(--text-muted);
+        }
+        .pricing-card li::before {
+            content: "✓ ";
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 60px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        .footer-section h4 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .footer-section a {
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 5px 0;
+            transition: color 0.2s;
+        }
+        .footer-section a:hover {
+            color: var(--text);
+        }
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: var(--text-muted);
             font-size: 0.9rem;
         }
-        .credit a { color: #8B5CF6; text-decoration: none; }
-        .badges { margin-top: 20px; }
-        .badges img { height: 50px; margin: 5px; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .pricing-card.featured { transform: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="logo">🦞</div>
-    <h1>ClawPhone</h1>
-    <p class="tagline">Voice chat with your AI from iPhone & Apple Watch</p>
-    
-    <div class="features">
-        <div class="feature">
-            <div class="feature-icon">🎤</div>
-            <div class="feature-text">Voice Conversations</div>
+    <nav>
+        <a href="/" class="nav-logo">
+            <span>🦞</span> ClawPhone
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#voices">Voices</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/support">Support</a>
         </div>
-        <div class="feature">
-            <div class="feature-icon">⌚</div>
-            <div class="feature-text">Apple Watch App</div>
+    </nav>
+
+    <section class="hero">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/app-icon/rounded.png" alt="ClawPhone" class="hero-logo" onerror="this.style.display='none'">
+        <h1>Talk to Your Clawbot</h1>
+        <p class="subtitle">Voice chat with your personal AI assistant in 20+ fun character voices.<br>Works on iPhone and Apple Watch.</p>
+        <a href="https://apps.apple.com/app/clawphone" class="cta-button">Download on App Store</a>
+        <div class="app-badges">
+            <span class="app-badge">📱 iPhone</span>
+            <span class="app-badge">⌚ Apple Watch</span>
+            <span class="app-badge">🎤 Voice Chat</span>
         </div>
-        <div class="feature">
-            <div class="feature-icon">🧽</div>
-            <div class="feature-text">Fun Character Voices</div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Why ClawPhone?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎭</div>
+                <h3>Character Voices</h3>
+                <p>Chat with your AI in voices like SpongeBob, JARVIS, Rick Sanchez, and more. 20+ characters to choose from.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⌚</div>
+                <h3>Apple Watch</h3>
+                <p>Talk to your AI right from your wrist. Perfect for quick questions on the go.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Your Personal AI</h3>
+                <p>Connect to YOUR Clawbot that knows you, your preferences, and your files. Not a generic chatbot.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3>Image Analysis</h3>
+                <p>Send photos and get intelligent responses. Your AI can see and understand images.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-Time</h3>
+                <p>Instant voice-to-text and text-to-speech. Natural conversations without lag.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Private & Secure</h3>
+                <p>Your conversations stay between you and your AI. We don't store or sell your data.</p>
+            </div>
         </div>
-    </div>
-    
-    <a href="http://142.132.160.28:8080/api/download/ClawPhone-4.8.0.ipa" class="download-btn">
-        Download for iOS
-    </a>
-    
-    <p class="credit">
-        Built for the <a href="https://openclaw.ai">OpenClaw</a> community<br>
-        Thanks to Peter Steinberger 🙏
-    </p>
+    </section>
+
+    <section class="voices" id="voices">
+        <h2>20+ Character Voices</h2>
+        <p class="subtitle">From cartoon favorites to iconic AI assistants</p>
+        <div class="voice-categories">
+            <div class="voice-tag"><span>🧽</span>SpongeBob</div>
+            <div class="voice-tag"><span>⭐</span>Patrick</div>
+            <div class="voice-tag"><span>🦑</span>Squidward</div>
+            <div class="voice-tag"><span>🦀</span>Mr. Krabs</div>
+            <div class="voice-tag"><span>🍩</span>Cartman</div>
+            <div class="voice-tag"><span>🧪</span>Rick Sanchez</div>
+            <div class="voice-tag"><span>😰</span>Morty</div>
+            <div class="voice-tag"><span>🤖</span>JARVIS</div>
+            <div class="voice-tag"><span>⚔️</span>Geralt</div>
+            <div class="voice-tag"><span>🐉</span>Tyrion</div>
+            <div class="voice-tag"><span>💍</span>Gollum</div>
+            <div class="voice-tag"><span>🎬</span>Morgan Freeman</div>
+            <div class="voice-tag"><span>➕</span>And more...</div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Get Your Clawbot</h3>
+                    <p>Set up your personal AI assistant at <a href="https://clawbot.ai" style="color: var(--primary)">clawbot.ai</a>. It runs on Telegram and knows everything about you.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Download ClawPhone</h3>
+                    <p>Get the app from the App Store. Available for iPhone and Apple Watch.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Connect Your Bot</h3>
+                    <p>Message your Clawbot "connect clawphone" to get a connection code. Enter it in the app.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Start Talking!</h3>
+                    <p>Pick a character voice and start chatting. Your AI responds in that character's voice.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <h2>Simple Pricing</h2>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Free</h3>
+                <div class="price">£0</div>
+                <ul>
+                    <li>SpongeBob & Patrick voices</li>
+                    <li>10 messages per day</li>
+                    <li>iPhone app</li>
+                    <li>Basic support</li>
+                </ul>
+            </div>
+            <div class="pricing-card featured">
+                <h3>Premium</h3>
+                <div class="price">£0.99<span>/month</span></div>
+                <ul>
+                    <li>All 20+ character voices</li>
+                    <li>Unlimited messages</li>
+                    <li>iPhone + Apple Watch</li>
+                    <li>Priority support</li>
+                    <li>New voices added monthly</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>🦞 ClawPhone</h4>
+                <p style="color: var(--text-muted);">Voice chat with your AI<br>in character voices.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#features">Features</a>
+                <a href="#voices">Voices</a>
+                <a href="#pricing">Pricing</a>
+                <a href="https://apps.apple.com/app/clawphone">Download</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="/support">Help Center</a>
+                <a href="mailto:support@clawbot.ai">Contact Us</a>
+                <a href="/privacy">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <a href="https://clawbot.ai">Clawbot.ai</a>
+                <a href="https://maltbot.com">Maltbot</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 ClawPhone. Made with 🦞 by the Clawbot team.</p>
+        </div>
+    </footer>
 </body>
 </html>
