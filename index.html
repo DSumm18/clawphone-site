@@ -481,6 +481,37 @@
             font-size: 0.9rem;
         }
         
+        /* Copy Command Box */
+        .copy-command {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-dark);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .copy-command:hover {
+            border-color: var(--primary);
+            background: rgba(255, 107, 53, 0.05);
+        }
+        .copy-command code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+        .copy-btn {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .copy-command.copied .copy-btn {
+            color: #4ade80;
+        }
+
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
             .nav-links { display: none; }
@@ -599,7 +630,7 @@
 
     <section class="how-it-works" id="how">
         <h2 class="section-title">Get Started in 3 Minutes</h2>
-        <p class="section-subtitle">Already have a Clawbot? You're one step away.</p>
+        <p class="section-subtitle">Already have a Clawbot? You're two messages away.</p>
         <div class="steps">
             <div class="step">
                 <div class="step-number">1</div>
@@ -618,12 +649,28 @@
             <div class="step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>Connect Your Bot</h3>
-                    <p>Message your Clawbot "connect clawphone" to get a connection code. Enter it in the app and you're linked!</p>
+                    <h3>Install the Skill</h3>
+                    <p>Message your Clawbot to install the ClawPhone skill:</p>
+                    <div class="copy-command" onclick="copyText('install clawphone-connect skill')">
+                        <code>install clawphone-connect skill</code>
+                        <span class="copy-btn">📋 Copy</span>
+                    </div>
                 </div>
             </div>
             <div class="step">
                 <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Get Your Code</h3>
+                    <p>Once installed, ask your bot for a connection code:</p>
+                    <div class="copy-command" onclick="copyText('connect clawphone')">
+                        <code>connect clawphone</code>
+                        <span class="copy-btn">📋 Copy</span>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Your bot will give you an 8-digit code. Enter it in the app!</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">5</div>
                 <div class="step-content">
                     <h3>Start Talking!</h3>
                     <p>Pick a character voice and start chatting. Your AI responds in that character's voice. It's like having SpongeBob as your personal assistant!</p>
@@ -807,6 +854,16 @@
         function declineCookies() {
             localStorage.setItem('cookieConsent', 'declined');
             document.getElementById('cookie-banner').style.display = 'none';
+        }
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                event.currentTarget.classList.add('copied');
+                event.currentTarget.querySelector('.copy-btn').textContent = '✓ Copied!';
+                setTimeout(function() {
+                    event.currentTarget.classList.remove('copied');
+                    event.currentTarget.querySelector('.copy-btn').textContent = '📋 Copy';
+                }, 2000);
+            });
         }
     </script>
 </body>
