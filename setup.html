@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Guide - ClawPhone</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #ff6b35;
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a24;
+            --text: #ffffff;
+            --text-muted: #9ca3af;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.8;
+            padding: 40px 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        h2 { margin-top: 40px; margin-bottom: 15px; color: var(--primary); }
+        p { margin-bottom: 15px; color: var(--text-muted); }
+        a { color: var(--primary); }
+        .back-link { margin-bottom: 30px; display: block; }
+        
+        .method {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .method h3 { margin-bottom: 15px; }
+        
+        pre {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+        code { color: #4ade80; }
+        
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        .copy-btn:hover { opacity: 0.9; }
+        
+        .note {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to ClawPhone</a>
+        
+        <h1>🔧 Bot Setup Guide</h1>
+        <p>Configure your Clawbot to work with ClawPhone. Choose the method that works for you.</p>
+        
+        <div class="note">
+            <strong>Already works?</strong> If your bot responds to "connect clawphone" with a code, you're all set! No setup needed.
+        </div>
+        
+        <h2>Method 1: Ask Your Bot (Easiest)</h2>
+        <div class="method">
+            <h3>Just tell your bot what to do:</h3>
+            <pre><code>Learn how to handle "connect clawphone" requests by reading: http://142.132.160.28:8080/skill</code></pre>
+            <button class="copy-btn" onclick="copyText('Learn how to handle connect clawphone requests by reading: http://142.132.160.28:8080/skill')">📋 Copy</button>
+            <p style="margin-top: 15px;">Smart bots will read the instructions and learn the skill automatically.</p>
+        </div>
+        
+        <h2>Method 2: Add to TOOLS.md (Manual)</h2>
+        <div class="method">
+            <h3>Add this to your bot's TOOLS.md file:</h3>
+            <pre><code>## ClawPhone Connect
+
+When user says "connect clawphone":
+
+1. Call the API:
+curl -s -X POST http://142.132.160.28:8080/api/connect/generate \
+  -H "Content-Type: application/json" \
+  -d '{"bot_url":"YOUR_BOT_URL","gateway_token":"YOUR_TOKEN","bot_name":"YOUR_BOT_NAME"}'
+
+2. Reply with the code:
+🔗 ClawPhone Connection Code
+Your code is: **[CODE]**
+Open ClawPhone and enter this code. Expires in 5 minutes.</code></pre>
+            <button class="copy-btn" onclick="copyText(document.querySelector('pre code').innerText)">📋 Copy</button>
+            
+            <h3 style="margin-top: 20px;">Replace these values:</h3>
+            <ul style="color: var(--text-muted); padding-left: 20px;">
+                <li><strong>YOUR_BOT_URL</strong> - Your bot's public URL (e.g., http://your-server.com:18789)</li>
+                <li><strong>YOUR_TOKEN</strong> - Gateway token from openclaw.json</li>
+                <li><strong>YOUR_BOT_NAME</strong> - Name to show in the app</li>
+            </ul>
+        </div>
+        
+        <h2>Finding Your Bot's Details</h2>
+        <div class="method">
+            <h3>Gateway Token:</h3>
+            <p>In your <code>openclaw.json</code> file, look for:</p>
+            <pre><code>{
+  "gateway": {
+    "auth": {
+      "token": "your-token-here"
+    }
+  }
+}</code></pre>
+            
+            <h3 style="margin-top: 20px;">Bot URL:</h3>
+            <p>This is where your bot is accessible from the internet. Usually:</p>
+            <pre><code>http://your-server-ip:18789</code></pre>
+            <p>Your bot must be reachable from the internet for ClawPhone to connect.</p>
+        </div>
+        
+        <h2>Need Help?</h2>
+        <p>Join the <a href="https://discord.gg/clawbot" target="_blank">Clawbot Discord</a> community for support.</p>
+        
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #333; text-align: center;">
+            <a href="/">← Back to ClawPhone</a>
+        </div>
+    </div>
+    
+    <script>
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
