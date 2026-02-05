@@ -81,8 +81,8 @@
         <h2>Method 1: Ask Your Bot (Easiest)</h2>
         <div class="method">
             <h3>Just tell your bot what to do:</h3>
-            <pre><code>Learn how to handle "connect clawphone" requests by reading: http://142.132.160.28:8080/skill</code></pre>
-            <button class="copy-btn" onclick="copyText('Learn how to handle connect clawphone requests by reading: http://142.132.160.28:8080/skill')">📋 Copy</button>
+            <pre><code>Learn how to handle "connect clawphone" requests by reading: https://api.clawphone.app/skill</code></pre>
+            <button class="copy-btn" onclick="copyText('Learn how to handle connect clawphone requests by reading: https://api.clawphone.app/skill')">📋 Copy</button>
             <p style="margin-top: 15px;">Smart bots will read the instructions and learn the skill automatically.</p>
         </div>
         
@@ -94,7 +94,7 @@
 When user says "connect clawphone":
 
 1. Call the API:
-curl -s -X POST http://142.132.160.28:8080/api/connect/generate \
+curl -s -X POST https://api.clawphone.app/api/connect/generate \
   -H "Content-Type: application/json" \
   -d '{"bot_url":"YOUR_BOT_URL","gateway_token":"YOUR_TOKEN","bot_name":"YOUR_BOT_NAME"}'
 
