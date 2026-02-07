@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClawPhone - OpenClaw Skill Security Scanner</title>
-    <meta name="description" content="Scan OpenClaw skills for security threats. Free. Powered by Cisco AI Defense.">
+    <title>ClawPhone: Talk to Your OpenClaw Bot Safely</title>
+    <meta name="description" content="Voice chat with 20+ character voices. Every OpenClaw skill gets a safety score before you install. Get ClawPhone for secure AI conversations.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -509,8 +509,8 @@
                 <span>🔒</span>
                 <span>Powered by Cisco AI Defense</span>
             </div>
-            <h1>Is Your OpenClaw Safe?</h1>
-            <p><strong style="color: var(--critical);">18% of popular skills have security vulnerabilities.</strong> Before you install that skill, scan it. Free security analysis detects data exfiltration, API key theft, and malicious code patterns.</p>
+            <h1>Talk to your OpenClaw bot — safely.</h1>
+            <p>Voice chat with your OpenClaw bot using 20+ character voices. Every skill is scanned for safety before you install.</p>
             <div class="cta-buttons">
                 <a href="https://scan.clawphone.com" class="btn btn-primary">🔍 Scan Now</a>
                 <a href="#dashboard" class="btn btn-secondary">View Live Threats</a>
@@ -518,28 +518,29 @@
         </div>
     </section>
 
+    <!-- Social Proof Strip -->
+    <section style="padding: 32px 0; background: var(--surface);">
+        <div class="container">
+            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 800px; margin: 0 auto;">
+                <div class="stat-card">
+                    <div class="stat-value safe">500+</div>
+                    <div class="stat-label">Skills pre-scanned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value neutral">Instant</div>
+                    <div class="stat-label">Safety scores</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 24px; color: var(--accent);">Cisco AI Defense</div>
+                    <div class="stat-label">Powered by</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="dashboard" id="dashboard">
         <div class="container">
             <h2>🔴 Live Threat Dashboard</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value neutral" id="total-scans">--</div>
-                    <div class="stat-label">Total Scans</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value threat" id="threats-found">--</div>
-                    <div class="stat-label">Threats Found</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value threat" id="threat-percentage">--%</div>
-                    <div class="stat-label">Skills with Issues</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value safe" id="safe-percentage">--%</div>
-                    <div class="stat-label">Clean Skills</div>
-                </div>
-            </div>
             
             <div class="dashboard-grid">
                 <div class="dashboard-card">
@@ -675,6 +676,7 @@
                 <a href="https://openclaw.ai">OpenClaw</a>
             </div>
             <p class="powered-by">Security scanning powered by <a href="https://github.com/cisco-ai-defense/skill-scanner" style="color: var(--accent);">Cisco AI Defense</a></p>
+            <p style="color: var(--text-secondary); font-size: 12px; margin-top: 16px;">© 2026 Schoolgle Ltd. All rights reserved.</p>
         </div>
     </footer>
 
