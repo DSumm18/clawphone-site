@@ -921,7 +921,7 @@
         <section class="proof">
             <div class="proof__inner">
                 <div class="proof__stat">
-                    <div class="proof__number">500+</div>
+                    <div class="proof__number" id="skills-count">500+</div>
                     <div class="proof__label">Skills pre-scanned</div>
                 </div>
                 <div class="proof__stat">
@@ -1191,5 +1191,24 @@
         </div>
     </footer>
 
+<script>
+    // Fetch real scan stats from API
+    (async function() {
+        try {
+            const response = await fetch('http://142.132.160.28:8080/api/scan/cache-stats');
+            if (response.ok) {
+                const data = await response.json();
+                const count = data.total_skills || 0;
+                const el = document.getElementById('skills-count');
+                if (el && count > 0) {
+                    el.textContent = count.toLocaleString() + '+';
+                }
+            }
+        } catch (e) {
+            // Keep fallback value - CORS or network issue
+            console.log('Using fallback stats');
+        }
+    })();
+</script>
 </body>
 </html>
