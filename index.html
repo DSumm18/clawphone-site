@@ -3,1050 +3,624 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClawPhone - Talk to Your AI in Character Voices</title>
-    <meta name="description" content="Voice chat with your personal Clawbot AI assistant in 20+ fun character voices. Works on iPhone and Apple Watch.">
-    <meta property="og:title" content="ClawPhone - Voice Chat with Your AI">
-    <meta property="og:description" content="Talk to your Clawbot in SpongeBob's voice, JARVIS, and 20+ more characters.">
-    <meta property="og:type" content="website">
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦞</text></svg>">
+    <title>ClawPhone - OpenClaw Skill Security Scanner</title>
+    <meta name="description" content="Scan OpenClaw skills for security threats. Free. Powered by Cisco AI Defense.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
-            --primary: #ff6b35;
-            --primary-dark: #e55a2b;
-            --bg-dark: #0a0a0f;
-            --bg-card: #1a1a24;
-            --text: #ffffff;
-            --text-muted: #9ca3af;
+            --bg: #0A0A0F;
+            --surface: #1A1A24;
+            --surface-elevated: #252532;
+            --primary: #8B5CF6;
+            --accent: #06B6D4;
+            --text: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --critical: #EF4444;
+            --high: #F97316;
+            --medium: #EAB308;
+            --low: #3B82F6;
+            --safe: #22C55E;
         }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-dark);
+            background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            overflow-x: hidden;
-        }
-        a { color: var(--primary); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        
-        /* Animated Background Particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: float 20s infinite ease-in-out;
-        }
-        .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 25s; }
-        .particle:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 20s; width: 6px; height: 6px; }
-        .particle:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 28s; }
-        .particle:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 22s; width: 3px; height: 3px; }
-        .particle:nth-child(5) { left: 50%; animation-delay: 3s; animation-duration: 26s; }
-        .particle:nth-child(6) { left: 60%; animation-delay: 5s; animation-duration: 21s; width: 5px; height: 5px; }
-        .particle:nth-child(7) { left: 70%; animation-delay: 2s; animation-duration: 24s; }
-        .particle:nth-child(8) { left: 80%; animation-delay: 4s; animation-duration: 27s; width: 4px; height: 4px; }
-        .particle:nth-child(9) { left: 90%; animation-delay: 1s; animation-duration: 23s; }
-        .particle:nth-child(10) { left: 15%; animation-delay: 3s; animation-duration: 19s; width: 3px; height: 3px; }
-        .particle:nth-child(11) { left: 25%; animation-delay: 0s; animation-duration: 30s; }
-        .particle:nth-child(12) { left: 75%; animation-delay: 2s; animation-duration: 18s; width: 5px; height: 5px; }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.4; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
         }
         
-        /* Glow Effects */
-        .glow {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(150px);
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .glow-1 {
-            background: var(--primary);
-            top: -200px;
-            right: -200px;
-            animation: pulse 8s infinite ease-in-out;
-        }
-        .glow-2 {
-            background: #8b5cf6;
-            bottom: -200px;
-            left: -200px;
-            animation: pulse 10s infinite ease-in-out reverse;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.1; }
-            50% { transform: scale(1.2); opacity: 0.2; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        
+        /* Header */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--surface);
         }
         
-        /* Ensure content is above particles */
-        nav, section, footer { position: relative; z-index: 1; }
-        
-        /* Fade in animation for sections */
-        section {
-            animation: fadeInUp 0.8s ease-out;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Navigation */
-        nav {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
         }
-        .nav-logo {
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-decoration: none;
-            color: var(--text);
+            gap: 8px;
         }
-        .nav-logo span { font-size: 2rem; }
-        .nav-links { display: flex; gap: 30px; align-items: center; }
-        .nav-links a {
-            color: var(--text-muted);
+        
+        .logo-emoji { font-size: 28px; }
+        
+        nav a {
+            color: var(--text-secondary);
             text-decoration: none;
+            margin-left: 24px;
             transition: color 0.2s;
         }
-        .nav-links a:hover { color: var(--primary); }
-        .nav-cta {
-            background: var(--primary);
-            color: white !important;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
+        
+        nav a:hover { color: var(--text); }
         
         /* Hero */
         .hero {
+            padding: 80px 0;
             text-align: center;
-            padding: 80px 20px 60px;
-            max-width: 900px;
-            margin: 0 auto;
         }
+        
         .hero-badge {
-            display: inline-block;
-            background: rgba(255, 107, 53, 0.1);
-            border: 1px solid rgba(255, 107, 53, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
+            font-size: 14px;
             color: var(--primary);
+            margin-bottom: 24px;
         }
+        
         .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, var(--primary), #ff8f5a, #fbbf24, var(--primary));
-            background-size: 300% 300%;
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradientShift 5s ease infinite;
         }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .hero .subtitle {
-            font-size: 1.4rem;
-            color: var(--text-muted);
-            margin-bottom: 40px;
+        
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
             max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 40px;
         }
+        
         .cta-buttons {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             justify-content: center;
             flex-wrap: wrap;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 18px 40px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        .cta-button:hover::before {
-            left: 100%;
-        }
-        .cta-button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(255, 107, 53, 0.5);
-            text-decoration: none;
-        }
-        .cta-secondary {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            box-shadow: none;
-        }
-        .cta-secondary:hover {
-            background: rgba(255, 107, 53, 0.1);
         }
         
-        /* Stats */
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 50px;
-            flex-wrap: wrap;
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
         }
-        .stat {
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--text);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--surface-elevated);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--surface-elevated);
+        }
+        
+        /* Live Dashboard */
+        .dashboard {
+            padding: 80px 0;
+            background: var(--surface);
+        }
+        
+        .dashboard h2 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .stat-card {
+            background: var(--bg);
+            border-radius: 16px;
+            padding: 24px;
             text-align: center;
         }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            animation: numberPulse 2s infinite ease-in-out;
+        
+        .stat-value {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
         }
-        .stat:nth-child(2) .stat-number { animation-delay: 0.3s; }
-        .stat:nth-child(3) .stat-number { animation-delay: 0.6s; }
-        .stat:nth-child(4) .stat-number { animation-delay: 0.9s; }
-        @keyframes numberPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+        
+        .stat-value.threat { color: var(--critical); }
+        .stat-value.safe { color: var(--safe); }
+        .stat-value.neutral { color: var(--accent); }
+        
         .stat-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
         
-        /* Video Section */
-        .video-section {
-            padding: 60px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-            text-align: center;
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        
+        .dashboard-card {
+            background: var(--bg);
+            border-radius: 16px;
+            padding: 24px;
         }
-        .video-placeholder {
-            background: var(--bg-card);
-            padding: 100px 20px;
-            border-radius: 20px;
-            border: 2px dashed rgba(255, 107, 53, 0.3);
+        
+        .dashboard-card h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Recent Scans Feed */
+        .scan-feed {
+            list-style: none;
+        }
+        
+        .scan-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--surface);
+        }
+        
+        .scan-item:last-child { border-bottom: none; }
+        
+        .scan-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        
+        .scan-status.safe { background: var(--safe); }
+        .scan-status.threat { background: var(--critical); }
+        
+        .scan-info { flex: 1; }
+        
+        .scan-severity {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .severity-critical { background: rgba(239, 68, 68, 0.2); color: var(--critical); }
+        .severity-high { background: rgba(249, 115, 22, 0.2); color: var(--high); }
+        .severity-medium { background: rgba(234, 179, 8, 0.2); color: var(--medium); }
+        .severity-low { background: rgba(59, 130, 246, 0.2); color: var(--low); }
+        .severity-info { background: rgba(156, 163, 175, 0.2); color: var(--text-secondary); }
+        
+        .scan-time {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-left: 12px;
+        }
+        
+        /* Vulnerability Types */
+        .vuln-list { list-style: none; }
+        
+        .vuln-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--surface);
+        }
+        
+        .vuln-item:last-child { border-bottom: none; }
+        
+        .vuln-name { font-size: 14px; }
+        
+        .vuln-count {
+            background: var(--surface-elevated);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
         
         /* Features */
         .features {
-            padding: 80px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            padding: 80px 0;
         }
-        .section-title {
+        
+        .features h2 {
+            font-size: 36px;
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
-        .section-subtitle {
+        
+        .features-subtitle {
             text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 60px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
         }
+        
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
         }
+        
         .feature-card {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 107, 53, 0.1);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 20px;
-            padding: 2px;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6, var(--primary));
-            background-size: 200% 200%;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .feature-card:hover::before {
-            opacity: 1;
-            animation: borderGlow 2s linear infinite;
-        }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
-        }
-        @keyframes borderGlow {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-        .feature-card:hover .feature-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        .feature-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-        .feature-card p {
-            color: var(--text-muted);
-        }
-        
-        /* Voices Section */
-        .voices {
-            padding: 80px 20px;
-            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 50%, var(--bg-dark) 100%);
-        }
-        .voice-categories {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .voice-tag {
-            background: var(--bg-card);
-            padding: 12px 24px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 107, 53, 0.2);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            animation: subtleBounce 3s infinite ease-in-out;
-        }
-        .voice-tag:nth-child(odd) { animation-delay: 0.5s; }
-        .voice-tag:nth-child(3n) { animation-delay: 1s; }
-        .voice-tag:hover {
-            border-color: var(--primary);
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
-            background: rgba(255, 107, 53, 0.1);
-        }
-        .voice-tag span {
-            margin-right: 8px;
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-        .voice-tag:hover span {
-            transform: scale(1.3);
-        }
-        @keyframes subtleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        /* How It Works */
-        .how-it-works {
-            padding: 80px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .steps {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        .step {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            background: var(--bg-card);
-            padding: 25px;
+            background: var(--surface);
             border-radius: 16px;
-        }
-        .step-number {
-            background: var(--primary);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-        .step-content h3 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        .step-content p {
-            color: var(--text-muted);
-        }
-        .step-content a {
-            color: var(--primary);
+            padding: 32px;
         }
         
-        /* Ecosystem */
-        .ecosystem {
-            padding: 80px 20px;
-            background: var(--bg-card);
+        .feature-icon {
+            font-size: 36px;
+            margin-bottom: 16px;
         }
-        .ecosystem-grid {
+        
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+        
+        /* Voice Chat Section */
+        .voice-section {
+            padding: 80px 0;
+            background: var(--surface);
+        }
+        
+        .voice-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
         }
-        .ecosystem-item {
+        
+        @media (max-width: 768px) {
+            .voice-content { grid-template-columns: 1fr; }
+        }
+        
+        .voice-text h2 {
+            font-size: 36px;
+            margin-bottom: 24px;
+        }
+        
+        .voice-text p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        
+        .voice-features {
+            list-style: none;
+        }
+        
+        .voice-features li {
+            padding: 8px 0;
             display: flex;
             align-items: center;
-            gap: 15px;
-            background: var(--bg-dark);
-            padding: 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--text);
-            transition: transform 0.2s;
-        }
-        .ecosystem-item:hover {
-            transform: translateX(5px);
-            text-decoration: none;
-        }
-        .ecosystem-icon {
-            font-size: 2rem;
-        }
-        .ecosystem-item h4 {
-            font-size: 1rem;
-            margin-bottom: 2px;
-        }
-        .ecosystem-item p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            gap: 12px;
         }
         
-        /* Pricing */
-        .pricing {
-            padding: 80px 20px;
-            text-align: center;
-        }
-        .pricing-cards {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        .pricing-card {
-            background: var(--bg-card);
-            padding: 40px;
-            border-radius: 20px;
-            width: 320px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: left;
-        }
-        .pricing-card.featured {
-            border-color: var(--primary);
-            position: relative;
-        }
-        .pricing-card.featured::before {
-            content: "POPULAR";
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .voice-features li::before {
+            content: "✓";
+            color: var(--safe);
             font-weight: bold;
-        }
-        .pricing-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-        .pricing-card .price {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .pricing-card .price span {
-            font-size: 1rem;
-            color: var(--text-muted);
-        }
-        .pricing-card ul {
-            list-style: none;
-            margin: 30px 0;
-        }
-        .pricing-card li {
-            padding: 10px 0;
-            color: var(--text-muted);
-        }
-        .pricing-card li::before {
-            content: "✓ ";
-            color: var(--primary);
         }
         
-        /* FAQ */
-        .faq {
-            padding: 80px 20px;
-            max-width: 800px;
+        .app-mockup {
+            background: var(--bg);
+            border-radius: 32px;
+            padding: 16px;
+            max-width: 300px;
             margin: 0 auto;
         }
-        .faq-item {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        .faq-item h4 {
-            margin-bottom: 10px;
-            color: var(--text);
-        }
-        .faq-item p {
-            color: var(--text-muted);
+        
+        .app-screen {
+            background: var(--surface-elevated);
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
         }
         
-        /* CTA Section */
-        .final-cta {
-            padding: 100px 20px;
-            text-align: center;
-            background: linear-gradient(180deg, var(--bg-dark) 0%, rgba(255, 107, 53, 0.1) 100%);
-        }
-        .final-cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        .final-cta p {
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            font-size: 1.2rem;
-        }
+        .app-screen .emoji { font-size: 48px; margin-bottom: 16px; }
         
         /* Footer */
         footer {
-            padding: 60px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-        }
-        .footer-section h4 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-        .footer-section a {
-            display: block;
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 5px 0;
-            transition: color 0.2s;
-        }
-        .footer-section a:hover {
-            color: var(--text);
-        }
-        .footer-section p {
-            color: var(--text-muted);
-        }
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .social-links a {
-            font-size: 1.5rem;
-        }
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 40px auto 0;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 48px 0;
+            border-top: 1px solid var(--surface);
             text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
         }
         
-        /* Copy Command Box */
-        .copy-command {
+        .footer-links {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-dark);
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            border-radius: 10px;
-            padding: 12px 15px;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.2s;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 24px;
         }
-        .copy-command:hover {
-            border-color: var(--primary);
-            background: rgba(255, 107, 53, 0.05);
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
         }
-        .copy-command code {
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 1rem;
-            color: var(--primary);
+        
+        .footer-links a:hover { color: var(--text); }
+        
+        .powered-by {
+            color: var(--text-secondary);
+            font-size: 14px;
         }
-        .copy-btn {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            white-space: nowrap;
+        
+        /* Loading states */
+        .loading {
+            opacity: 0.5;
+            animation: pulse 1.5s infinite;
         }
-        .copy-command.copied .copy-btn {
-            color: #4ade80;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .nav-links { display: none; }
-            .stats { gap: 20px; }
-            .stat-number { font-size: 1.5rem; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-    
-    <nav>
-        <a href="/" class="nav-logo">
-            <span>🦞</span> ClawPhone
-        </a>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#voices">Voices</a>
-            <a href="#pricing">Pricing</a>
-            <a href="https://clawbot.ai" target="_blank">Get Clawbot</a>
-            <a href="#" class="nav-cta">Download</a>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <span class="logo-emoji">🛡️</span>
+                <span>ClawPhone</span>
+            </div>
+            <nav>
+                <a href="#dashboard">Dashboard</a>
+                <a href="#features">Features</a>
+                <a href="#voice">Voice Chat</a>
+                <a href="https://apps.apple.com/app/clawphone" target="_blank">Get App</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
     <section class="hero">
-        <span class="hero-badge">🎉 Part of the Clawbot Ecosystem</span>
-        <h1>Talk to Your Clawbot</h1>
-        <p class="subtitle">Voice chat with your personal Clawbot AI. Ask questions, get help, have fun - and hear responses in SpongeBob's voice (or Rick, JARVIS, and more). iPhone + Apple Watch.</p>
-        <div class="cta-buttons">
-            <a href="#how" class="cta-button" onclick="alert('Coming to App Store soon! Join our Discord for updates.')">📱 Download Free</a>
-            <a href="https://clawbot.ai" class="cta-button cta-secondary" target="_blank">Get Clawbot →</a>
-        </div>
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-number">9</div>
-                <div class="stat-label">Character Voices</div>
+        <div class="container">
+            <div class="hero-badge">
+                <span>🔒</span>
+                <span>Powered by Cisco AI Defense</span>
             </div>
-            <div class="stat">
-                <div class="stat-number">⌚</div>
-                <div class="stat-label">Apple Watch</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">🔒</div>
-                <div class="stat-label">Private & Secure</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">84K+</div>
-                <div class="stat-label">Clawbot Users</div>
+            <h1>Scan OpenClaw Skills<br>for Security Threats</h1>
+            <p>Before you install that skill, scan it. Free security analysis detects data exfiltration, API key theft, and malicious code patterns.</p>
+            <div class="cta-buttons">
+                <a href="https://scan.clawphone.com" class="btn btn-primary">🔍 Scan Now</a>
+                <a href="#dashboard" class="btn btn-secondary">View Live Threats</a>
             </div>
         </div>
     </section>
 
-    <section class="video-section">
-        <div style="background: var(--bg-card); padding: 40px; border-radius: 20px; max-width: 800px; margin: 0 auto;">
-            <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.8rem;">How It Works</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: center;">
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">💬</div>
-                    <h3 style="color: var(--primary); margin-bottom: 8px;">You Talk</h3>
-                    <p style="color: var(--text-muted);">Speak naturally to the app - ask questions, get help, have a chat</p>
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <h2>🔴 Live Threat Dashboard</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value neutral" id="total-scans">--</div>
+                    <div class="stat-label">Total Scans</div>
                 </div>
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">🧠</div>
-                    <h3 style="color: var(--primary); margin-bottom: 8px;">Your AI Thinks</h3>
-                    <p style="color: var(--text-muted);">Your personal Clawbot processes your request using its full capabilities</p>
+                <div class="stat-card">
+                    <div class="stat-value threat" id="threats-found">--</div>
+                    <div class="stat-label">Threats Found</div>
                 </div>
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">🧽</div>
-                    <h3 style="color: var(--primary); margin-bottom: 8px;">SpongeBob Responds</h3>
-                    <p style="color: var(--text-muted);">Hear the answer in your favorite character's voice!</p>
+                <div class="stat-card">
+                    <div class="stat-value threat" id="threat-percentage">--%</div>
+                    <div class="stat-label">Skills with Issues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value safe" id="safe-percentage">--%</div>
+                    <div class="stat-label">Clean Skills</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>📡 Recent Scans</h3>
+                    <ul class="scan-feed" id="recent-scans">
+                        <li class="scan-item loading">Loading...</li>
+                    </ul>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>🎯 Top Vulnerability Types</h3>
+                    <ul class="vuln-list" id="top-vulns">
+                        <li class="vuln-item loading">Loading...</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="features" id="features">
-        <h2 class="section-title">Why ClawPhone?</h2>
-        <p class="section-subtitle">The only way to voice chat with your personal Clawbot AI</p>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🎭</div>
-                <h3>Fun Character Voices</h3>
-                <p>Chat in voices like SpongeBob, JARVIS, Rick Sanchez, Cartman and more. New voices added regularly.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⌚</div>
-                <h3>Apple Watch App</h3>
-                <p>Talk to your AI right from your wrist. Perfect for quick questions when your phone isn't handy.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <h3>Your Personal AI</h3>
-                <p>Connect to YOUR Clawbot that knows you, your preferences, your files. Not a generic chatbot.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📸</div>
-                <h3>Image Analysis</h3>
-                <p>Send photos and get intelligent responses. Your AI can see and understand images.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Real-Time Responses</h3>
-                <p>Instant voice-to-text and text-to-speech. Natural conversations without awkward delays.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h3>100% Private</h3>
-                <p>Your conversations go to YOUR Clawbot on YOUR infrastructure. We never see your data.</p>
+        <div class="container">
+            <h2>Security Analysis Engine</h2>
+            <p class="features-subtitle">Enterprise-grade skill scanning for the OpenClaw community</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Static Analysis</h3>
+                    <p>YAML + YARA pattern matching detects known malicious code patterns, credential theft, and data exfiltration.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Behavioral Analysis</h3>
+                    <p>Dataflow tracking identifies suspicious patterns like base64 encoding combined with network requests.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Results</h3>
+                    <p>Get security analysis in seconds. No account required. Completely free for the community.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Severity Ratings</h3>
+                    <p>Clear CRITICAL/HIGH/MEDIUM/LOW ratings with plain English explanations and remediation steps.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="voices" id="voices">
-        <h2 class="section-title">Character Voices</h2>
-        <p class="section-subtitle">Talk to your AI in these fun voices - more added regularly!</p>
-        <div class="voice-categories">
-            <div class="voice-tag"><span>🧽</span>SpongeBob</div>
-            <div class="voice-tag"><span>⭐</span>Patrick</div>
-            <div class="voice-tag"><span>🦑</span>Squidward</div>
-            <div class="voice-tag"><span>🦀</span>Mr. Krabs</div>
-            <div class="voice-tag"><span>🍩</span>Cartman</div>
-            <div class="voice-tag"><span>🧢</span>Kyle</div>
-            <div class="voice-tag"><span>🧪</span>Rick Sanchez</div>
-            <div class="voice-tag"><span>😰</span>Morty</div>
-            <div class="voice-tag"><span>🎯</span>JARVIS</div>
-            <div class="voice-tag" style="border-color: var(--primary); color: var(--primary);"><span>➕</span>More coming...</div>
-        </div>
-    </section>
-
-    <section class="how-it-works" id="how">
-        <h2 class="section-title">Get Started in 3 Minutes</h2>
-        <p class="section-subtitle">Already have a Clawbot? You're two messages away.</p>
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h3>Get Your Clawbot</h3>
-                    <p>Don't have one yet? Set up your personal AI at <a href="https://clawbot.ai" target="_blank">clawbot.ai</a>. It's free and open-source. Your AI runs on your own infrastructure.</p>
+    <section class="voice-section" id="voice">
+        <div class="container">
+            <div class="voice-content">
+                <div class="voice-text">
+                    <h2>Plus: Voice Chat with Your AI</h2>
+                    <p>ClawPhone isn't just security. Connect to your personal OpenClaw bot and chat via voice with 20+ character voices.</p>
+                    <ul class="voice-features">
+                        <li>Connect to any OpenClaw bot with a code</li>
+                        <li>Voice input with speech recognition</li>
+                        <li>20+ TTS voices including characters</li>
+                        <li>Works on iOS and Android</li>
+                    </ul>
+                    <a href="https://apps.apple.com/app/clawphone" class="btn btn-primary" style="margin-top: 24px;">Download App</a>
                 </div>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h3>Download ClawPhone</h3>
-                    <p>Get the app from the App Store. Available for iPhone and Apple Watch. Free to download with premium voice options.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h3>Get Your Connection Code</h3>
-                    <p>Message your Clawbot:</p>
-                    <div class="copy-command" onclick="copyText('connect clawphone')">
-                        <code>connect clawphone</code>
-                        <span class="copy-btn">📋 Copy</span>
+                <div class="app-mockup">
+                    <div class="app-screen">
+                        <div class="emoji">🦞</div>
+                        <h3>ClawPhone</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Voice chat + Security scanner</p>
                     </div>
-                    <p style="margin-top: 10px; font-size: 0.9rem;">Your bot will give you an 8-digit code. Enter it in the app!</p>
-                    <p style="margin-top: 8px; font-size: 0.8rem; color: #666;">First time? <a href="/skill/" style="color: var(--primary);">Get the skill →</a></p>
                 </div>
             </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <h3>Start Talking!</h3>
-                    <p>Pick a character voice and start chatting. Your AI responds in that character's voice. It's like having SpongeBob as your personal assistant!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="ecosystem">
-        <h2 class="section-title">Part of the Clawbot Ecosystem</h2>
-        <p class="section-subtitle">ClawPhone works seamlessly with the entire Clawbot platform</p>
-        <div class="ecosystem-grid">
-            <a href="https://clawbot.ai" target="_blank" class="ecosystem-item">
-                <span class="ecosystem-icon">🤖</span>
-                <div>
-                    <h4>Clawbot</h4>
-                    <p>Your personal AI infrastructure</p>
-                </div>
-            </a>
-            <a href="https://docs.clawd.bot" target="_blank" class="ecosystem-item">
-                <span class="ecosystem-icon">📚</span>
-                <div>
-                    <h4>Documentation</h4>
-                    <p>Guides, tutorials & API reference</p>
-                </div>
-            </a>
-            <a href="https://clawdhub.com" target="_blank" class="ecosystem-item">
-                <span class="ecosystem-icon">🧩</span>
-                <div>
-                    <h4>ClawdHub</h4>
-                    <p>565+ skills marketplace</p>
-                </div>
-            </a>
-            <a href="https://discord.gg/clawbot" target="_blank" class="ecosystem-item">
-                <span class="ecosystem-icon">💬</span>
-                <div>
-                    <h4>Discord Community</h4>
-                    <p>Join 84K+ developers</p>
-                </div>
-            </a>
-            <a href="https://github.com/openclaw/openclaw" target="_blank" class="ecosystem-item">
-                <span class="ecosystem-icon">⭐</span>
-                <div>
-                    <h4>Open Source</h4>
-                    <p>MIT Licensed on GitHub</p>
-                </div>
-            </a>
-            <a href="https://youtube.com/@clawbot" target="_blank" class="ecosystem-item">
-                <span class="ecosystem-icon">📺</span>
-                <div>
-                    <h4>YouTube</h4>
-                    <p>Tutorials & demos</p>
-                </div>
-            </a>
-        </div>
-    </section>
-
-    <section class="pricing" id="pricing">
-        <h2 class="section-title">Simple Pricing</h2>
-        <p class="section-subtitle">Start free, upgrade when you want more voices</p>
-        <div class="pricing-cards">
-            <div class="pricing-card">
-                <h3>Free</h3>
-                <div class="price">£0</div>
-                <ul>
-                    <li>SpongeBob & Patrick voices</li>
-                    <li>10 messages per day</li>
-                    <li>iPhone app</li>
-                    <li>Basic support</li>
-                </ul>
-                <a href="https://apps.apple.com/app/clawphone" class="cta-button" style="width: 100%; text-align: center;">Get Started</a>
-            </div>
-            <div class="pricing-card featured">
-                <h3>Premium</h3>
-                <div class="price">£0.99<span>/month</span></div>
-                <ul>
-                    <li>All character voices</li>
-                    <li>Unlimited messages</li>
-                    <li>iPhone + Apple Watch</li>
-                    <li>Priority support</li>
-                    <li>New voices added monthly</li>
-                </ul>
-                <a href="https://apps.apple.com/app/clawphone" class="cta-button" style="width: 100%; text-align: center;">Start Free Trial</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="faq">
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <div class="faq-item">
-            <h4>What is Clawbot?</h4>
-            <p>Clawbot is a personal AI assistant that runs on your own infrastructure - completely private and autonomous. Unlike ChatGPT, it can execute tasks, access your files, and maintain persistent memory. Get yours free at <a href="https://clawbot.ai">clawbot.ai</a>.</p>
-        </div>
-        <div class="faq-item">
-            <h4>Do I need a Clawbot to use ClawPhone?</h4>
-            <p>Yes, ClawPhone is a voice interface for your Clawbot. You'll need to set up a Clawbot first (it's free and takes about 10 minutes), then connect it to ClawPhone.</p>
-        </div>
-        <div class="faq-item">
-            <h4>How does the voice chat work?</h4>
-            <p>You speak into your phone or watch, we convert it to text, send it to your Clawbot, get the response, and play it back in your chosen character voice. All in real-time!</p>
-        </div>
-        <div class="faq-item">
-            <h4>Is my data private?</h4>
-            <p>100%. Your messages go directly to YOUR Clawbot running on YOUR infrastructure. We never see, store, or process your conversations. The only thing we handle is the voice synthesis.</p>
-        </div>
-        <div class="faq-item">
-            <h4>Can I request new voices?</h4>
-            <p>Yes! We add new voices based on user requests. Let us know who you want to talk to and we'll try to add them in our monthly updates.</p>
-        </div>
-    </section>
-
-    <section class="final-cta">
-        <h2>Ready to Talk to Your AI?</h2>
-        <p>Join thousands of Clawbot users who are already chatting in character voices.</p>
-        <div class="cta-buttons">
-            <a href="https://apps.apple.com/app/clawphone" class="cta-button">📱 Download ClawPhone</a>
-            <a href="https://clawbot.ai" class="cta-button cta-secondary" target="_blank">Get Clawbot First →</a>
         </div>
     </section>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>🦞 ClawPhone</h4>
-                <p>Voice chat with your personal AI in 20+ character voices.</p>
-                <div class="social-links">
-                    <a href="https://twitter.com/clawbot" target="_blank">𝕏</a>
-                    <a href="https://discord.gg/clawbot" target="_blank">💬</a>
-                    <a href="https://youtube.com/@clawbot" target="_blank">📺</a>
-                    <a href="https://github.com/openclaw" target="_blank">⭐</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Product</h4>
-                <a href="#features">Features</a>
-                <a href="#voices">Voices</a>
-                <a href="#pricing">Pricing</a>
-                <a href="https://apps.apple.com/app/clawphone">Download</a>
-            </div>
-            <div class="footer-section">
-                <h4>Ecosystem</h4>
-                <a href="https://clawbot.ai" target="_blank">Clawbot</a>
-                <a href="https://clawdhub.com" target="_blank">ClawdHub Skills</a>
-                <a href="https://docs.clawd.bot" target="_blank">Documentation</a>
-                <a href="https://discord.gg/clawbot" target="_blank">Community</a>
-            </div>
-            <div class="footer-section">
-                <h4>Support</h4>
-                <a href="support.html">Help Center</a>
-                <a href="mailto:support@clawbot.ai">Contact Us</a>
+        <div class="container">
+            <div class="footer-links">
                 <a href="privacy.html">Privacy Policy</a>
-                <a href="https://clawbot.ai/terms" target="_blank">Terms of Service</a>
+                <a href="support.html">Support</a>
+                <a href="https://github.com/DSumm18/clawphone">GitHub</a>
+                <a href="https://openclaw.ai">OpenClaw</a>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>© 2026 ClawPhone. Part of the <a href="https://clawbot.ai">Clawbot</a> ecosystem. Made with 🦞</p>
+            <p class="powered-by">Security scanning powered by <a href="https://github.com/cisco-ai-defense/skill-scanner" style="color: var(--accent);">Cisco AI Defense</a></p>
         </div>
     </footer>
 
-    <!-- Cookie Consent Banner -->
-    <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid rgba(255,107,53,0.3); padding: 20px; z-index: 9999;">
-        <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-            <p style="color: var(--text-muted); margin: 0; flex: 1;">
-                🍪 We use cookies to improve your experience. By using our site, you agree to our <a href="privacy.html">Privacy Policy</a>.
-            </p>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="acceptCookies()" style="background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-weight: bold;">Accept</button>
-                <button onclick="declineCookies()" style="background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; cursor: pointer;">Decline</button>
-            </div>
-        </div>
-    </div>
-    
     <script>
-        if (!localStorage.getItem('cookieConsent')) {
-            document.getElementById('cookie-banner').style.display = 'block';
+        // Fetch and display live stats
+        async function loadStats() {
+            try {
+                const response = await fetch('https://clawphone-api.vercel.app/api/stats');
+                // Fallback to direct server if Vercel fails
+                const data = response.ok ? await response.json() : await fetchDirect();
+                updateDashboard(data);
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+                // Try direct server
+                try {
+                    const data = await fetchDirect();
+                    updateDashboard(data);
+                } catch (e2) {
+                    console.error('Direct fetch also failed:', e2);
+                }
+            }
         }
-        function acceptCookies() {
-            localStorage.setItem('cookieConsent', 'accepted');
-            document.getElementById('cookie-banner').style.display = 'none';
+        
+        async function fetchDirect() {
+            const response = await fetch('http://142.132.160.28:8080/api/stats');
+            return await response.json();
         }
-        function declineCookies() {
-            localStorage.setItem('cookieConsent', 'declined');
-            document.getElementById('cookie-banner').style.display = 'none';
+        
+        function updateDashboard(data) {
+            // Stats
+            document.getElementById('total-scans').textContent = data.total_scans || 0;
+            document.getElementById('threats-found').textContent = data.threats_found || 0;
+            document.getElementById('threat-percentage').textContent = (data.threat_percentage || 0) + '%';
+            document.getElementById('safe-percentage').textContent = (100 - (data.threat_percentage || 0)) + '%';
+            
+            // Recent scans
+            const scanFeed = document.getElementById('recent-scans');
+            if (data.recent_scans && data.recent_scans.length > 0) {
+                scanFeed.innerHTML = data.recent_scans.map(scan => `
+                    <li class="scan-item">
+                        <div class="scan-status ${scan.is_safe ? 'safe' : 'threat'}"></div>
+                        <div class="scan-info">
+                            ${scan.is_safe ? 'Clean skill' : `${scan.findings_count} issue${scan.findings_count !== 1 ? 's' : ''} found`}
+                        </div>
+                        ${!scan.is_safe ? `<span class="scan-severity severity-${scan.max_severity.toLowerCase()}">${scan.max_severity}</span>` : ''}
+                        <span class="scan-time">${scan.time_ago}</span>
+                    </li>
+                `).join('');
+            } else {
+                scanFeed.innerHTML = '<li class="scan-item">No scans yet. Be the first!</li>';
+            }
+            
+            // Top vulnerabilities
+            const vulnList = document.getElementById('top-vulns');
+            if (data.top_vulnerability_types && data.top_vulnerability_types.length > 0) {
+                vulnList.innerHTML = data.top_vulnerability_types.map(vuln => `
+                    <li class="vuln-item">
+                        <span class="vuln-name">${formatRuleName(vuln.rule)}</span>
+                        <span class="vuln-count">${vuln.count}</span>
+                    </li>
+                `).join('');
+            } else {
+                vulnList.innerHTML = '<li class="vuln-item">No vulnerabilities detected yet</li>';
+            }
         }
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                event.currentTarget.classList.add('copied');
-                event.currentTarget.querySelector('.copy-btn').textContent = '✓ Copied!';
-                setTimeout(function() {
-                    event.currentTarget.classList.remove('copied');
-                    event.currentTarget.querySelector('.copy-btn').textContent = '📋 Copy';
-                }, 2000);
-            });
+        
+        function formatRuleName(rule) {
+            if (!rule) return 'Unknown';
+            return rule.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
         }
+        
+        // Load stats on page load and refresh every 30 seconds
+        loadStats();
+        setInterval(loadStats, 30000);
     </script>
 </body>
 </html>
