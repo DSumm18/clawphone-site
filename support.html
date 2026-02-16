@@ -3,45 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClawPhone Support</title>
+    <title>ClawPhone Support | Help & FAQ</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; background: #1a1a1a; color: #fff; }
-        h1 { color: #ff6b35; }
-        h2 { color: #ff6b35; margin-top: 30px; }
-        a { color: #ff6b35; }
-        .faq { background: #2a2a2a; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        nav button {
+            padding: 10px 20px;
+            border: none;
+            background: #f5f5f5;
+            color: #333;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+        
+        nav button.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        nav button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .faq-item {
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+        
+        .faq-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+        
+        .faq-item h3:hover {
+            color: #764ba2;
+        }
+        
+        .faq-item p {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .faq-item .answer {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .faq-item.open .answer {
+            display: block;
+        }
+        
+        .toggle-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .contact-box {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .contact-box p {
+            margin: 10px 0;
+            font-size: 1em;
+        }
+        
+        .contact-box a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .contact-box a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .code-box {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+        
+        .step strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .troubleshoot-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .troubleshoot-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border: none;
+        }
+        
+        .troubleshoot-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .troubleshoot-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            nav {
+                flex-direction: column;
+            }
+            
+            nav button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>🦞 ClawPhone Support</h1>
-    
-    <h2>Getting Started</h2>
-    <div class="faq">
-        <p><strong>1. Download ClawPhone</strong> from the App Store</p>
-        <p><strong>2. Get a connection code</strong> by messaging your Clawbot: "connect clawphone"</p>
-        <p><strong>3. Enter the code</strong> in the app to link your AI</p>
+    <div class="container">
+        <header>
+            <h1>🎯 ClawPhone Support</h1>
+            <p>Help, FAQs, and troubleshooting for voice chat with your AI</p>
+        </header>
+        
+        <nav>
+            <button class="nav-btn active" onclick="showSection('faq')">FAQ</button>
+            <button class="nav-btn" onclick="showSection('getting-started')">Getting Started</button>
+            <button class="nav-btn" onclick="showSection('troubleshoot')">Troubleshooting</button>
+            <button class="nav-btn" onclick="showSection('features')">Features</button>
+            <button class="nav-btn" onclick="showSection('contact')">Contact</button>
+        </nav>
+        
+        <div class="content">
+            <!-- FAQ Section -->
+            <div id="faq" class="section active">
+                <h2>Frequently Asked Questions</h2>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        What is ClawPhone?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>ClawPhone is a lightweight, privacy-first voice chat app that connects you to your personal AI assistant. Instead of typing, you speak naturally and listen to AI responses. It works with custom AI bots and emphasizes privacy over data collection.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        How do I get my connection code?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>Your connection code comes from your AI bot or ClawPhone command. If you're using ClawBot (our test bot), run this command:</p>
+                        <div class="code-box">connect clawphone</div>
+                        <p>Your bot will generate a unique code. Copy that code and paste it into the ClawPhone app to connect.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        Is my data private?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p><strong>Yes, completely.</strong> ClawPhone does not:</p>
+                        <ul style="margin: 10px 0 0 20px;">
+                            <li>Store your messages</li>
+                            <li>Track your usage</li>
+                            <li>Collect your name or email</li>
+                            <li>Share data with third parties</li>
+                            <li>Use analytics or advertising</li>
+                        </ul>
+                        <p style="margin-top: 10px;">For detailed information, see our <a href="privacy.html">Privacy Policy</a>.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        Does it work offline?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>Core UI features work offline (you can see past conversations). However, to send new messages or receive voice responses, you need an internet connection. Voice synthesis and message transmission require network access.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        Can I use ClawPhone with my own bot?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>Yes! ClawPhone works with any bot that supports the connection code protocol. If you've built your own AI bot, you can integrate ClawPhone by implementing the connection code flow. See our <a href="https://github.com/openclaw/clawphone" target="_blank">GitHub documentation</a> for technical details.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        Does ClawPhone work on Apple Watch?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>Yes! ClawPhone includes a watchOS companion app. You can send messages and receive responses directly from your Watch. Voice input is optimized for quick interactions (great for quick questions while hands are busy).</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        What voice options are available?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>ClawPhone includes multiple voice personas powered by Fish Audio. Currently available voices include natural male/female voices, and character voices (SpongeBob, Patrick, and more). You can switch voices anytime in Settings.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h3>
+                        Is ClawPhone open source?
+                        <span class="toggle-icon">▼</span>
+                    </h3>
+                    <div class="answer">
+                        <p>Yes! ClawPhone is open source and community-driven. You can find the source code and contribute on <a href="https://github.com/openclaw/clawphone" target="_blank">GitHub</a>. We welcome bug reports, feature requests, and contributions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Getting Started Section -->
+            <div id="getting-started" class="section">
+                <h2>Getting Started</h2>
+                
+                <div class="step">
+                    <strong>Step 1: Get Your Connection Code</strong>
+                    <p>Ask your AI bot to generate a ClawPhone connection code. For example, if using ClawBot:</p>
+                    <div class="code-box">/connect clawphone</div>
+                    <p>Your bot will respond with a unique 6-8 character code.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Step 2: Open ClawPhone</strong>
+                    <p>Launch the ClawPhone app on your iPhone.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Step 3: Enter Connection Code</strong>
+                    <p>On the main screen, tap "Connect" and paste your connection code. The app will verify the code instantly.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Step 4: Start Talking</strong>
+                    <p>Once connected, tap the microphone button and speak naturally. ClawPhone will transcribe your voice and send it to your bot. When your bot responds, you'll hear it spoken aloud.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Step 5: Explore Settings (Optional)</strong>
+                    <p>In Settings, you can:</p>
+                    <ul style="margin: 10px 0 0 20px;">
+                        <li>Change voice (SpongeBob, Patrick, natural voices, etc.)</li>
+                        <li>Adjust speech speed</li>
+                        <li>View your privacy status</li>
+                        <li>Reconnect to a different bot</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Troubleshooting Section -->
+            <div id="troubleshoot" class="section">
+                <h2>Troubleshooting</h2>
+                
+                <table class="troubleshoot-table">
+                    <tr>
+                        <th>Issue</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Connection code not working</strong></td>
+                        <td>
+                            • Verify the code is correct (copy-paste, don't type)<br>
+                            • Codes expire after 5 minutes — get a new one<br>
+                            • Check your internet connection
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Microphone not working</strong></td>
+                        <td>
+                            • Check if ClawPhone has microphone permission (Settings > Privacy > Microphone)<br>
+                            • Try closing and reopening the app<br>
+                            • Restart your iPhone if permission was recently granted
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>No audio response</strong></td>
+                        <td>
+                            • Check if your device volume is up<br>
+                            • Verify Bluetooth headphones (if connected) have battery<br>
+                            • Check internet connection (voice requires network)<br>
+                            • Try a different voice in Settings
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>App crashes on startup</strong></td>
+                        <td>
+                            • Force close the app (swipe up from bottom)<br>
+                            • Restart your iPhone<br>
+                            • If persists, uninstall and reinstall ClawPhone
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Voice is cutting out</strong></td>
+                        <td>
+                            • Check WiFi/cellular signal strength<br>
+                            • Move closer to router or away from interference<br>
+                            • Try another voice (some voices are clearer on weak signals)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Connection keeps dropping</strong></td>
+                        <td>
+                            • Verify bot server is online<br>
+                            • Check firewall/network settings on bot side<br>
+                            • Try reconnecting with a new connection code
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Can't use Watch app</strong></td>
+                        <td>
+                            • Ensure Watch app installed and up-to-date<br>
+                            • Verify iPhone and Watch are paired<br>
+                            • Both devices need internet connection<br>
+                            • Try restarting Watch
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="contact-box">
+                    <strong>Still need help?</strong> <a href="mailto:support@clawphone.app">Email support@clawphone.app</a> with details about your issue.
+                </div>
+            </div>
+            
+            <!-- Features Section -->
+            <div id="features" class="section">
+                <h2>Features</h2>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">🎤 Voice-First Design</h3>
+                <p>Talk naturally, get instant responses. No typing required. Voice transcription and synthesis make conversations feel natural and fast.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">🛡️ Privacy Protected</h3>
+                <p>Zero data collection. No tracking. No analytics. Your conversations stay private. Built with GDPR compliance in mind.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">⚡ Instant Setup</h3>
+                <p>No sign-ups. No accounts. Just paste your connection code and start talking. Set up in 30 seconds.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">🤖 Works With Any Bot</h3>
+                <p>Connect to custom AI bots, not just cloud services. Bring your own bot or use our sample. Full flexibility.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">⌚ Apple Watch Integration</h3>
+                <p>Quick voice interactions from your wrist. Monitor complications. Seamless sync between iPhone and Watch.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">🎭 Voice Personas</h3>
+                <p>Choose from natural voices or fun character voices (SpongeBob, Patrick, and more). Change anytime, no setup required.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">📚 Message History</h3>
+                <p>View past conversations with your bot. Search history. Review what you discussed. Always accessible offline.</p>
+                
+                <h3 style="margin-top: 20px; color: #667eea;">🔧 Developer Friendly</h3>
+                <p>Open source on GitHub. Connect from your own apps. Full API documentation. Build on ClawPhone.</p>
+            </div>
+            
+            <!-- Contact Section -->
+            <div id="contact" class="section">
+                <h2>Get Help</h2>
+                
+                <div class="contact-box">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">📧 Email Support</h3>
+                    <p><strong>support@clawphone.app</strong></p>
+                    <p style="font-size: 0.95em; color: #666;">Response time: Usually within 24 hours</p>
+                </div>
+                
+                <div class="contact-box">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">💬 GitHub Issues</h3>
+                    <p><a href="https://github.com/openclaw/clawphone/issues" target="_blank">Open an issue on GitHub</a></p>
+                    <p style="font-size: 0.95em; color: #666;">For bug reports and feature requests</p>
+                </div>
+                
+                <div class="contact-box">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">📋 Report a Bug</h3>
+                    <p>Found a problem? Please include:</p>
+                    <ul style="margin: 10px 0 0 20px;">
+                        <li>iOS version</li>
+                        <li>ClawPhone version (in app Settings)</li>
+                        <li>What you were doing when it happened</li>
+                        <li>What happened (error message, crash, etc.)</li>
+                        <li>Steps to reproduce</li>
+                    </ul>
+                </div>
+                
+                <div class="contact-box">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">✨ Feature Requests</h3>
+                    <p>Have an idea? We'd love to hear it. Open a GitHub issue or email support@clawphone.app with your suggestion.</p>
+                </div>
+                
+                <div class="contact-box">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">🔐 Security Issues</h3>
+                    <p>Found a security vulnerability? Please email <strong>security@clawphone.app</strong> instead of opening a public issue.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 ClawPhone. Built with ❤️ by people who care about privacy.</p>
+            <p><a href="privacy.html">Privacy Policy</a> | <a href="https://github.com/openclaw/clawphone" target="_blank">GitHub</a> | <a href="https://clawphone.app" target="_blank">Website</a></p>
+        </footer>
     </div>
     
-    <h2>FAQ</h2>
-    <div class="faq">
-        <p><strong>Q: What is a Clawbot?</strong></p>
-        <p>A: Clawbot is your personal AI assistant powered by OpenClaw. Get one at <a href="https://clawbot.ai">clawbot.ai</a></p>
-    </div>
-    
-    <div class="faq">
-        <p><strong>Q: Why isn't my voice being recognized?</strong></p>
-        <p>A: Make sure you've granted microphone permissions. Go to Settings > ClawPhone > Microphone.</p>
-    </div>
-    
-    <div class="faq">
-        <p><strong>Q: How do I change voices?</strong></p>
-        <p>A: Tap the gear icon in the chat screen to access voice settings.</p>
-    </div>
-    
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:support@clawbot.ai">support@clawbot.ai</a></p>
-    
-    <h2>Links</h2>
-    <p><a href="/privacy">Privacy Policy</a></p>
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update nav buttons
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function toggleFAQ(element) {
+            element.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
