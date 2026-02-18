@@ -5,525 +5,402 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>ClawPhone</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      background: transparent; 
+      background: transparent;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif;
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
+      height: 100vh; width: 100vw; overflow: hidden;
     }
 
-    /* ===== THE WIDGET ===== */
+    /* ===== FLOATING WIDGET CONTAINER ===== */
     #widget {
       position: fixed;
-      bottom: 40px;
-      right: 40px;
+      bottom: 30px; right: 30px;
       z-index: 999999;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width 0.3s, height 0.3s;
     }
+    #widget.orb-only { width: 68px; height: 68px; }
+    #widget.open { width: 370px; height: 500px; }
+    @media (max-width: 500px) { #widget.open { width: 95vw; height: 85vh; } }
 
-    /* Collapsed = just the mic button */
-    #widget.collapsed { width: 70px; height: 70px; }
-    
-    /* Expanded = chat panel */
-    #widget.expanded { 
-      width: 380px; 
-      height: 520px;
-      bottom: 20px;
-      right: 20px;
-    }
-
-    @media (max-width: 500px) {
-      #widget.expanded { width: 100vw; height: 100vh; bottom: 0; right: 0; border-radius: 0 !important; }
-    }
-
-    /* ===== MIC BUTTON (always visible) ===== */
-    #mic-orb {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      border: none;
-      cursor: grab;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* ===== THE ORB ===== */
+    #orb {
+      width: 68px; height: 68px; border-radius: 50%; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
       background: radial-gradient(circle at 35% 30%, #e54c2a, #b83218);
-      box-shadow: 0 4px 20px rgba(229, 76, 42, 0.4), 0 2px 8px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
-      position: relative;
-      z-index: 10;
-      -webkit-user-select: none;
-      user-select: none;
+      box-shadow: 0 4px 24px rgba(229,76,42,0.45), 0 2px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s; position: absolute; bottom: 0; right: 0;
     }
-    #mic-orb:hover { 
-      transform: scale(1.08); 
-      box-shadow: 0 6px 30px rgba(229, 76, 42, 0.6), 0 2px 10px rgba(0,0,0,0.3);
-    }
-    #mic-orb:active { cursor: grabbing; }
+    #orb:hover { transform: scale(1.08); }
+    #orb.listening { background: radial-gradient(circle at 35% 30%, #22c55e, #15803d); box-shadow: 0 4px 24px rgba(34,197,94,0.5); animation: pulse 1.5s ease infinite; }
+    #orb.thinking { background: radial-gradient(circle at 35% 30%, #eab308, #a16207); }
+    #orb.speaking { background: radial-gradient(circle at 35% 30%, #3b82f6, #1d4ed8); animation: pulse 2s ease infinite; }
+    #orb.disconnected { background: radial-gradient(circle at 35% 30%, #666, #444); }
+    #widget.open #orb { display: none; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    .orb-icon { width: 30px; height: 30px; fill: white; pointer-events: none; }
 
-    #mic-orb.listening {
-      background: radial-gradient(circle at 35% 30%, #22c55e, #15803d);
-      box-shadow: 0 4px 25px rgba(34, 197, 94, 0.5), 0 2px 8px rgba(0,0,0,0.3);
-      animation: orbPulse 1.5s ease-in-out infinite;
-    }
-    #mic-orb.thinking {
-      background: radial-gradient(circle at 35% 30%, #eab308, #a16207);
-      box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
-      animation: orbSpin 2s linear infinite;
-    }
-    #mic-orb.speaking {
-      background: radial-gradient(circle at 35% 30%, #3b82f6, #1d4ed8);
-      box-shadow: 0 4px 25px rgba(59, 130, 246, 0.5);
-      animation: orbPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes orbPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-    }
-    @keyframes orbSpin {
-      0% { box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4); }
-      50% { box-shadow: 0 4px 35px rgba(234, 179, 8, 0.7); }
-      100% { box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4); }
-    }
-
-    .orb-icon { width: 32px; height: 32px; fill: white; pointer-events: none; }
-
-    /* Status ring */
-    #mic-orb::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      transition: border-color 0.3s;
-    }
-    #mic-orb.listening::after { border-color: rgba(34, 197, 94, 0.4); animation: ringPulse 2s ease infinite; }
-    @keyframes ringPulse {
-      0%, 100% { inset: -4px; opacity: 1; }
-      50% { inset: -12px; opacity: 0.3; }
-    }
-
-    /* ===== EXPANDED PANEL ===== */
+    /* ===== CHAT PANEL ===== */
     #panel {
-      display: none;
-      background: #111827;
-      border-radius: 20px;
+      display: none; width: 100%; height: 100%;
+      background: #111827; border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-      overflow: hidden;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      flex-direction: column; overflow: hidden;
     }
-    #widget.expanded #panel { display: flex; }
-    #widget.expanded #mic-orb { display: none; }
+    #widget.open #panel { display: flex; }
 
     /* Header */
-    #panel-header {
-      padding: 14px 16px;
-      background: #1a2332;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: grab;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    #panel-header:active { cursor: grabbing; }
+    .hdr { padding: 12px 14px; background: #1a2332; display: flex; align-items: center; gap: 10px; cursor: grab; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .hdr:active { cursor: grabbing; }
+    .hdr-av { width: 34px; height: 34px; border-radius: 50%; background: #e54c2a; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .hdr-info { flex: 1; }
+    .hdr-name { color: #fff; font-weight: 600; font-size: 14px; }
+    .hdr-sub { color: #888; font-size: 11px; }
+    .hdr-btn { background: none; border: none; color: #666; font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+    .hdr-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
 
-    .header-avatar {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: #e54c2a;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-    .header-info { flex: 1; }
-    .header-name { color: #fff; font-weight: 600; font-size: 15px; }
-    .header-status { color: #888; font-size: 12px; }
-    
-    .header-btn {
-      background: none; border: none; color: #888; font-size: 18px; 
-      cursor: pointer; padding: 4px 8px; border-radius: 8px;
-    }
-    .header-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    /* Characters */
+    #chars { display: flex; gap: 5px; padding: 7px 10px; overflow-x: auto; background: #0f1720; scrollbar-width: none; }
+    #chars::-webkit-scrollbar { display: none; }
+    .chip { flex-shrink: 0; padding: 4px 10px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: #999; font-size: 11px; cursor: pointer; white-space: nowrap; }
+    .chip:hover { border-color: #e54c2a; color: #fff; }
+    .chip.on { background: #e54c2a; border-color: #e54c2a; color: #fff; }
 
-    /* Character selector */
-    #char-bar {
-      display: flex;
-      gap: 6px;
-      padding: 8px 12px;
-      overflow-x: auto;
-      background: #0f1720;
-      scrollbar-width: none;
-    }
-    #char-bar::-webkit-scrollbar { display: none; }
-    
-    .char-chip {
-      flex-shrink: 0;
-      padding: 5px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      color: #aaa;
-      font-size: 12px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    .char-chip:hover { border-color: #e54c2a; color: #fff; }
-    .char-chip.active { background: #e54c2a; border-color: #e54c2a; color: #fff; }
+    /* Messages */
+    #msgs { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
+    .bub { max-width: 85%; padding: 9px 13px; border-radius: 14px; font-size: 13px; line-height: 1.4; animation: fadeUp 0.2s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } }
+    .bub.u { background: #1e3a2e; color: #a7f3d0; align-self: flex-end; border-bottom-right-radius: 3px; }
+    .bub.a { background: #1e293b; color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 3px; }
+    .bub.t { background: #1e293b; color: #666; font-style: italic; align-self: flex-start; }
 
-    /* Chat messages */
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      scrollbar-width: thin;
-      scrollbar-color: #333 transparent;
-    }
+    /* Bottom */
+    .btm { padding: 10px; background: #1a2332; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .btm input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 9px 14px; color: #fff; font-size: 13px; outline: none; }
+    .btm input::placeholder { color: #555; }
+    .btm input:focus { border-color: #e54c2a; }
+    .mic-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: #e54c2a; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mic-btn:hover { background: #f05e3b; }
+    .mic-btn.on { background: #22c55e; animation: pulse 1.5s ease infinite; }
+    .mic-btn svg { width: 20px; height: 20px; fill: white; }
 
-    .bubble {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.45;
-      animation: bubbleIn 0.25s ease;
+    /* ===== CONNECT SCREEN ===== */
+    #connect-screen {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px; text-align: center; flex: 1; gap: 16px;
     }
-    @keyframes bubbleIn { from { opacity: 0; transform: translateY(6px); } }
+    #connect-screen h3 { color: #fff; font-size: 16px; }
+    #connect-screen p { color: #888; font-size: 12px; line-height: 1.5; }
+    #connect-screen input {
+      width: 200px; padding: 12px 16px; text-align: center; font-size: 22px; letter-spacing: 4px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; color: #fff; outline: none; font-family: monospace;
+    }
+    #connect-screen input:focus { border-color: #e54c2a; }
+    #connect-screen input::placeholder { letter-spacing: 2px; font-size: 14px; color: #555; }
+    .connect-btn {
+      padding: 10px 28px; background: #e54c2a; color: #fff; border: none;
+      border-radius: 24px; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .connect-btn:hover { background: #f05e3b; }
+    .connect-btn:disabled { background: #555; cursor: not-allowed; }
+    #connect-error { color: #f87171; font-size: 12px; min-height: 16px; }
+    #connect-success { color: #4ade80; font-size: 13px; display: none; }
 
-    .bubble.user { 
-      background: #1e3a2e; color: #a7f3d0; 
-      align-self: flex-end; border-bottom-right-radius: 4px; 
+    /* Settings overlay */
+    #settings {
+      display: none; position: absolute; inset: 0; background: #111827;
+      border-radius: 18px; z-index: 10; flex-direction: column;
+      padding: 20px; gap: 14px;
     }
-    .bubble.assistant { 
-      background: #1e293b; color: #e2e8f0; 
-      align-self: flex-start; border-bottom-left-radius: 4px; 
-    }
-    .bubble.thinking {
-      background: #1e293b; color: #888; font-style: italic;
-      align-self: flex-start;
-    }
-
-    /* Bottom bar */
-    #bottom-bar {
-      padding: 12px;
-      background: #1a2332;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-
-    #text-input {
-      flex: 1;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px;
-      padding: 10px 16px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
-    #text-input::placeholder { color: #555; }
-    #text-input:focus { border-color: #e54c2a; }
-
-    #voice-btn {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: #e54c2a;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-    #voice-btn:hover { background: #f05e3b; transform: scale(1.05); }
-    #voice-btn.listening { background: #22c55e; animation: orbPulse 1.5s ease infinite; }
-    #voice-btn svg { width: 22px; height: 22px; fill: white; }
+    #settings h3 { color: #fff; font-size: 15px; }
+    #settings p { color: #888; font-size: 12px; }
+    .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .settings-label { color: #ccc; font-size: 13px; }
+    .settings-value { color: #4ade80; font-size: 13px; }
+    .disconnect-btn { margin-top: auto; padding: 10px; background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; cursor: pointer; font-size: 13px; }
+    .disconnect-btn:hover { background: rgba(239,68,68,0.25); }
   </style>
 </head>
 <body>
 
-<div id="widget" class="collapsed">
-  <!-- Collapsed: just the orb -->
-  <button id="mic-orb" onmousedown="startDrag(event)" onclick="handleOrbClick(event)">
-    <svg class="orb-icon" viewBox="0 0 24 24">
-      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-    </svg>
+<div id="widget" class="orb-only">
+  <button id="orb" class="disconnected" onclick="openPanel()">
+    <svg class="orb-icon" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
   </button>
 
-  <!-- Expanded: chat panel -->
   <div id="panel">
-    <div id="panel-header" onmousedown="startDrag(event)">
-      <div class="header-avatar">🤖</div>
-      <div class="header-info">
-        <div class="header-name" id="char-name">Ed</div>
-        <div class="header-status" id="conn-status">Connected</div>
+    <div class="hdr" onmousedown="dragStart(event)">
+      <div class="hdr-av">🤖</div>
+      <div class="hdr-info">
+        <div class="hdr-name" id="bot-name">ClawPhone</div>
+        <div class="hdr-sub" id="bot-status">Not connected</div>
       </div>
-      <button class="header-btn" onclick="stopAudio()" title="Stop speaking">⏹</button>
-      <button class="header-btn" onclick="collapse()" title="Minimise">—</button>
+      <button class="hdr-btn" onclick="toggleSettings()" title="Settings">⚙️</button>
+      <button class="hdr-btn" onclick="closePanel()" title="Minimise">—</button>
     </div>
 
-    <div id="char-bar">
-      <div class="char-chip active" data-voice="jarvis" onclick="setVoice(this)">🤖 JARVIS</div>
-      <div class="char-chip" data-voice="spongebob" onclick="setVoice(this)">🧽 SpongeBob</div>
-      <div class="char-chip" data-voice="patrick" onclick="setVoice(this)">⭐ Patrick</div>
-      <div class="char-chip" data-voice="rick" onclick="setVoice(this)">🧪 Rick</div>
-      <div class="char-chip" data-voice="morty" onclick="setVoice(this)">😰 Morty</div>
-      <div class="char-chip" data-voice="cartman" onclick="setVoice(this)">🎩 Cartman</div>
-      <div class="char-chip" data-voice="mrkrabs" onclick="setVoice(this)">🦀 Mr Krabs</div>
-      <div class="char-chip" data-voice="squidward" onclick="setVoice(this)">🎵 Squidward</div>
+    <!-- CONNECT SCREEN -->
+    <div id="connect-screen">
+      <h3>🔗 Connect Your Clawbot</h3>
+      <p>Open your Clawbot and say<br><strong>"connect clawphone"</strong><br>to get your 8-digit code</p>
+      <input id="code-input" type="text" maxlength="8" placeholder="Enter code" oninput="this.value=this.value.replace(/\D/g,'')">
+      <div id="connect-error"></div>
+      <button class="connect-btn" onclick="connectBot()" id="connect-go">Connect</button>
+      <div id="connect-success">✅ Connected!</div>
     </div>
 
-    <div id="messages"></div>
-
-    <div id="bottom-bar">
-      <input id="text-input" type="text" placeholder="Type or tap mic..." 
-             onkeydown="if(event.key==='Enter')sendText()">
-      <button id="voice-btn" onclick="toggleVoice()">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-          <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-        </svg>
+    <!-- CHAT (hidden until connected) -->
+    <div id="chars" style="display:none">
+      <div class="chip on" data-v="jarvis" onclick="pick(this)">🤖 JARVIS</div>
+      <div class="chip" data-v="spongebob" onclick="pick(this)">🧽 SpongeBob</div>
+      <div class="chip" data-v="patrick" onclick="pick(this)">⭐ Patrick</div>
+      <div class="chip" data-v="rick" onclick="pick(this)">🧪 Rick</div>
+      <div class="chip" data-v="morty" onclick="pick(this)">😰 Morty</div>
+      <div class="chip" data-v="cartman" onclick="pick(this)">🎩 Cartman</div>
+      <div class="chip" data-v="mrkrabs" onclick="pick(this)">🦀 Mr Krabs</div>
+      <div class="chip" data-v="squidward" onclick="pick(this)">🎵 Squidward</div>
+    </div>
+    <div id="msgs" style="display:none"></div>
+    <div class="btm" id="btm" style="display:none">
+      <input id="tin" type="text" placeholder="Type or tap mic..." onkeydown="if(event.key==='Enter')send()">
+      <button class="mic-btn" id="mic" onclick="toggleMic()">
+        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
       </button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="settings">
+      <h3>⚙️ Settings</h3>
+      <div class="settings-item"><span class="settings-label">Bot</span><span class="settings-value" id="s-bot">—</span></div>
+      <div class="settings-item"><span class="settings-label">Status</span><span class="settings-value" id="s-status">—</span></div>
+      <div class="settings-item"><span class="settings-label">Device ID</span><span class="settings-value" id="s-device" style="font-size:10px">—</span></div>
+      <button class="disconnect-btn" onclick="disconnect()">🔌 Disconnect</button>
+      <button class="hdr-btn" style="align-self:flex-end;margin-top:10px" onclick="toggleSettings()">✕ Close</button>
     </div>
   </div>
 </div>
 
 <script>
-  // === CONFIG ===
-  // Same origin - API and widget served from same server
-  const API_BASE = '';
-  const USER_ID = 'web-' + (localStorage.getItem('cpUserId') || (() => {
-    const id = Math.random().toString(36).substr(2, 12);
-    localStorage.setItem('cpUserId', id);
-    return id;
-  })());
-  
-  let currentVoice = localStorage.getItem('cpVoice') || 'jarvis';
-  let isListening = false;
-  let recognition = null;
-  let currentAudio = null;
-  let isDragging = false;
-  let dragOffset = { x: 0, y: 0 };
-  let hasDragged = false;
-  let silenceTimer = null;
-  let finalTranscript = '';
+  const API = '';
+  let deviceId = localStorage.getItem('cp_device') || (() => { const id='web-'+Math.random().toString(36).substr(2,12); localStorage.setItem('cp_device',id); return id; })();
+  let voice = localStorage.getItem('cp_voice') || 'jarvis';
+  let connected = false;
+  let botName = '';
+  let listening = false;
+  let rec = null;
+  let audio = null;
+  let finalT = '';
+  let silT = null;
+  let dragging = false, dragOff = {x:0,y:0}, didDrag = false;
 
+  // Elements
   const widget = document.getElementById('widget');
-  const micOrb = document.getElementById('mic-orb');
-  const panel = document.getElementById('panel');
-  const messagesEl = document.getElementById('messages');
-  const textInput = document.getElementById('text-input');
-  const voiceBtn = document.getElementById('voice-btn');
+  const orb = document.getElementById('orb');
+  const msgs = document.getElementById('msgs');
+  const tin = document.getElementById('tin');
 
-  // Restore voice selection
-  document.querySelectorAll('.char-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.voice === currentVoice);
-  });
+  // Restore voice
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.v === voice));
 
-  // === DRAG ===
-  function startDrag(e) {
-    if (e.target.closest('button:not(#mic-orb):not(#panel-header)')) return;
-    isDragging = true;
-    hasDragged = false;
-    const rect = widget.getBoundingClientRect();
-    dragOffset.x = e.clientX - rect.left;
-    dragOffset.y = e.clientY - rect.top;
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', stopDrag);
-  }
-  function onDrag(e) {
-    if (!isDragging) return;
-    hasDragged = true;
-    const x = e.clientX - dragOffset.x;
-    const y = e.clientY - dragOffset.y;
-    widget.style.left = x + 'px';
-    widget.style.top = y + 'px';
-    widget.style.right = 'auto';
-    widget.style.bottom = 'auto';
-  }
-  function stopDrag() {
-    isDragging = false;
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', stopDrag);
-  }
+  // Check connection on load
+  checkConnection();
 
-  // === EXPAND / COLLAPSE ===
-  function handleOrbClick(e) {
-    if (hasDragged) return; // Was a drag, not a click
-    widget.classList.remove('collapsed');
-    widget.classList.add('expanded');
-    textInput.focus();
-  }
-  function collapse() {
-    widget.classList.remove('expanded');
-    widget.classList.add('collapsed');
-    stopListening();
-  }
-
-  // === VOICE SELECTION ===
-  function setVoice(el) {
-    document.querySelectorAll('.char-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    currentVoice = el.dataset.voice;
-    localStorage.setItem('cpVoice', currentVoice);
-    document.getElementById('char-name').textContent = el.textContent.trim();
-  }
-
-  // === SPEECH RECOGNITION ===
-  function setupRecognition() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return null;
-    const rec = new SR();
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.lang = 'en-GB';
-    
-    rec.onresult = (e) => {
-      finalTranscript = '';
-      let interim = '';
-      for (let i = 0; i < e.results.length; i++) {
-        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
-        else interim += e.results[i][0].transcript;
+  async function checkConnection() {
+    try {
+      const r = await fetch(`${API}/api/connect/status?deviceId=${deviceId}`);
+      const d = await r.json();
+      if (d.connected) {
+        connected = true;
+        botName = d.botName || 'Bot';
+        showChat();
+      } else {
+        showConnect();
       }
-      textInput.value = finalTranscript + interim;
-      clearTimeout(silenceTimer);
-      silenceTimer = setTimeout(() => {
-        if (isListening && finalTranscript.trim()) {
-          stopListening();
-          sendMessage(finalTranscript.trim());
-        }
-      }, 2000);
-    };
-    rec.onerror = () => stopListening();
-    rec.onend = () => { if (isListening) try { rec.start(); } catch {} };
-    return rec;
+    } catch { showConnect(); }
   }
 
-  function toggleVoice() {
-    if (isListening) {
-      stopListening();
-      if (finalTranscript.trim()) sendMessage(finalTranscript.trim());
-    } else {
-      startListening();
-    }
+  function showConnect() {
+    connected = false;
+    orb.classList.add('disconnected');
+    document.getElementById('connect-screen').style.display = 'flex';
+    document.getElementById('chars').style.display = 'none';
+    msgs.style.display = 'none';
+    document.getElementById('btm').style.display = 'none';
+    document.getElementById('bot-name').textContent = 'ClawPhone';
+    document.getElementById('bot-status').textContent = 'Not connected';
   }
 
-  function startListening() {
-    if (!recognition) recognition = setupRecognition();
-    if (!recognition) return;
-    finalTranscript = '';
-    textInput.value = '';
-    textInput.placeholder = '🎤 Listening...';
-    isListening = true;
-    voiceBtn.classList.add('listening');
-    micOrb.classList.add('listening');
-    try { recognition.start(); } catch {}
+  function showChat() {
+    orb.classList.remove('disconnected');
+    document.getElementById('connect-screen').style.display = 'none';
+    document.getElementById('chars').style.display = 'flex';
+    msgs.style.display = 'flex';
+    document.getElementById('btm').style.display = 'flex';
+    document.getElementById('bot-name').textContent = botName;
+    document.getElementById('bot-status').textContent = '🟢 Connected';
+    document.getElementById('s-bot').textContent = botName;
+    document.getElementById('s-status').textContent = 'Connected';
+    document.getElementById('s-device').textContent = deviceId;
   }
 
-  function stopListening() {
-    isListening = false;
-    clearTimeout(silenceTimer);
-    voiceBtn.classList.remove('listening');
-    micOrb.classList.remove('listening');
-    textInput.placeholder = 'Type or tap mic...';
-    try { recognition?.stop(); } catch {}
-  }
-
-  // === SEND MESSAGE ===
-  function sendText() {
-    const text = textInput.value.trim();
-    if (!text) return;
-    textInput.value = '';
-    sendMessage(text);
-  }
-
-  async function sendMessage(text) {
-    addBubble('user', text);
-    addBubble('thinking', '...');
-    micOrb.classList.add('thinking');
+  async function connectBot() {
+    const code = document.getElementById('code-input').value.trim();
+    if (code.length !== 8) { document.getElementById('connect-error').textContent = 'Enter 8-digit code'; return; }
+    
+    document.getElementById('connect-go').disabled = true;
+    document.getElementById('connect-error').textContent = '';
 
     try {
-      const r = await fetch(`${API_BASE}/api/message`, {
+      const r = await fetch(`${API}/api/connect/validate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: USER_ID, message: text })
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ code, deviceId })
       });
-      const data = await r.json();
-      
-      // Remove thinking bubble
-      const thinking = messagesEl.querySelector('.thinking');
-      if (thinking) thinking.remove();
-
-      const reply = data.reply || data.text || data.message || 'No response';
-      addBubble('assistant', reply);
-
-      // Get TTS audio
-      micOrb.classList.remove('thinking');
-      micOrb.classList.add('speaking');
-      
-      const ttsR = await fetch(`${API_BASE}/api/tts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: reply, voice: currentVoice })
-      });
-      const ttsData = await ttsR.json();
-      
-      if (ttsData.audioUrl) {
-        playAudio(ttsData.audioUrl);
+      const d = await r.json();
+      if (d.success) {
+        document.getElementById('connect-success').style.display = 'block';
+        setTimeout(() => { checkConnection(); }, 1000);
       } else {
-        micOrb.classList.remove('speaking');
+        document.getElementById('connect-error').textContent = d.error || 'Invalid code';
       }
-    } catch (err) {
-      const thinking = messagesEl.querySelector('.thinking');
-      if (thinking) thinking.remove();
-      addBubble('assistant', 'Connection error — is ClawPhone API running?');
-      micOrb.classList.remove('thinking');
+    } catch (e) {
+      document.getElementById('connect-error').textContent = 'Connection failed';
+    }
+    document.getElementById('connect-go').disabled = false;
+  }
+
+  function disconnect() {
+    localStorage.removeItem('cp_device');
+    deviceId = 'web-'+Math.random().toString(36).substr(2,12);
+    localStorage.setItem('cp_device', deviceId);
+    toggleSettings();
+    showConnect();
+  }
+
+  function toggleSettings() {
+    const s = document.getElementById('settings');
+    s.style.display = s.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  // Panel open/close
+  function openPanel() { if (didDrag) return; widget.classList.remove('orb-only'); widget.classList.add('open'); if (connected) tin.focus(); }
+  function closePanel() { widget.classList.remove('open'); widget.classList.add('orb-only'); stopMic(); }
+
+  // Voice selection
+  function pick(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    voice = el.dataset.v;
+    localStorage.setItem('cp_voice', voice);
+  }
+
+  // Speech recognition
+  function setupRec() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return null;
+    const r = new SR(); r.continuous = true; r.interimResults = true; r.lang = 'en-GB';
+    r.onresult = e => {
+      finalT = ''; let interim = '';
+      for (let i = 0; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalT += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      tin.value = finalT + interim;
+      clearTimeout(silT);
+      silT = setTimeout(() => { if (listening && finalT.trim()) { stopMic(); sendMsg(finalT.trim()); } }, 2000);
+    };
+    r.onerror = () => stopMic();
+    r.onend = () => { if (listening) try { r.start(); } catch {} };
+    return r;
+  }
+
+  function toggleMic() { listening ? stopMic() : startMic(); if (!listening && finalT.trim()) sendMsg(finalT.trim()); }
+  function startMic() {
+    if (!rec) rec = setupRec(); if (!rec) return;
+    finalT = ''; tin.value = ''; listening = true;
+    document.getElementById('mic').classList.add('on');
+    orb.classList.add('listening');
+    try { rec.start(); } catch {}
+  }
+  function stopMic() {
+    listening = false; clearTimeout(silT);
+    document.getElementById('mic').classList.remove('on');
+    orb.classList.remove('listening');
+    try { rec?.stop(); } catch {}
+  }
+
+  // Send
+  function send() { const t = tin.value.trim(); if (!t) return; tin.value = ''; sendMsg(t); }
+
+  async function sendMsg(text) {
+    addBub('u', text);
+    addBub('t', '...');
+    orb.classList.add('thinking');
+
+    try {
+      const r = await fetch(`${API}/api/message`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ userId: deviceId, message: text })
+      });
+      const d = await r.json();
+      msgs.querySelector('.t')?.remove();
+      const reply = d.reply || d.text || d.message || 'No response';
+      addBub('a', reply);
+      orb.classList.remove('thinking');
+      orb.classList.add('speaking');
+
+      // TTS
+      const tr = await fetch(`${API}/api/tts`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ text: reply, voice })
+      });
+      const td = await tr.json();
+      if (td.audioUrl) playAudio(td.audioUrl);
+      else orb.classList.remove('speaking');
+    } catch {
+      msgs.querySelector('.t')?.remove();
+      addBub('a', 'Connection error');
+      orb.classList.remove('thinking');
     }
   }
 
-  function addBubble(type, text) {
-    const div = document.createElement('div');
-    div.className = `bubble ${type}`;
-    div.textContent = text;
-    messagesEl.appendChild(div);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    while (messagesEl.children.length > 50) messagesEl.removeChild(messagesEl.firstChild);
+  function addBub(cls, text) {
+    const d = document.createElement('div'); d.className = 'bub ' + cls; d.textContent = text;
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+    while (msgs.children.length > 40) msgs.removeChild(msgs.firstChild);
   }
 
-  // === AUDIO ===
   function playAudio(url) {
     stopAudio();
-    currentAudio = new Audio(API_BASE + url);
-    currentAudio.onended = () => { micOrb.classList.remove('speaking'); };
-    currentAudio.onerror = () => { micOrb.classList.remove('speaking'); };
-    currentAudio.play().catch(() => { micOrb.classList.remove('speaking'); });
+    audio = new Audio(API + url);
+    audio.onended = () => orb.classList.remove('speaking');
+    audio.onerror = () => orb.classList.remove('speaking');
+    audio.play().catch(() => orb.classList.remove('speaking'));
   }
-  function stopAudio() {
-    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-    micOrb.classList.remove('speaking');
-  }
+  function stopAudio() { if (audio) { audio.pause(); audio = null; } orb.classList.remove('speaking'); }
 
-  // === KEYBOARD SHORTCUT ===
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && e.target === document.body) {
-      e.preventDefault();
-      if (widget.classList.contains('collapsed')) handleOrbClick(e);
-      else toggleVoice();
-    }
-    if (e.code === 'Escape') collapse();
+  // Drag
+  function dragStart(e) {
+    dragging = true; didDrag = false;
+    const r = widget.getBoundingClientRect();
+    dragOff = { x: e.clientX - r.left, y: e.clientY - r.top };
+    document.addEventListener('mousemove', dragMove);
+    document.addEventListener('mouseup', dragEnd);
+  }
+  function dragMove(e) {
+    if (!dragging) return; didDrag = true;
+    widget.style.left = (e.clientX - dragOff.x) + 'px';
+    widget.style.top = (e.clientY - dragOff.y) + 'px';
+    widget.style.right = 'auto'; widget.style.bottom = 'auto';
+  }
+  function dragEnd() { dragging = false; document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Escape') closePanel();
   });
 </script>
 </body>
