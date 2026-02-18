@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ClawPhone</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: transparent; 
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ===== THE WIDGET ===== */
+    #widget {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      z-index: 999999;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Collapsed = just the mic button */
+    #widget.collapsed { width: 70px; height: 70px; }
+    
+    /* Expanded = chat panel */
+    #widget.expanded { 
+      width: 380px; 
+      height: 520px;
+      bottom: 20px;
+      right: 20px;
+    }
+
+    @media (max-width: 500px) {
+      #widget.expanded { width: 100vw; height: 100vh; bottom: 0; right: 0; border-radius: 0 !important; }
+    }
+
+    /* ===== MIC BUTTON (always visible) ===== */
+    #mic-orb {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: none;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 35% 30%, #e54c2a, #b83218);
+      box-shadow: 0 4px 20px rgba(229, 76, 42, 0.4), 0 2px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #mic-orb:hover { 
+      transform: scale(1.08); 
+      box-shadow: 0 6px 30px rgba(229, 76, 42, 0.6), 0 2px 10px rgba(0,0,0,0.3);
+    }
+    #mic-orb:active { cursor: grabbing; }
+
+    #mic-orb.listening {
+      background: radial-gradient(circle at 35% 30%, #22c55e, #15803d);
+      box-shadow: 0 4px 25px rgba(34, 197, 94, 0.5), 0 2px 8px rgba(0,0,0,0.3);
+      animation: orbPulse 1.5s ease-in-out infinite;
+    }
+    #mic-orb.thinking {
+      background: radial-gradient(circle at 35% 30%, #eab308, #a16207);
+      box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
+      animation: orbSpin 2s linear infinite;
+    }
+    #mic-orb.speaking {
+      background: radial-gradient(circle at 35% 30%, #3b82f6, #1d4ed8);
+      box-shadow: 0 4px 25px rgba(59, 130, 246, 0.5);
+      animation: orbPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    @keyframes orbSpin {
+      0% { box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4); }
+      50% { box-shadow: 0 4px 35px rgba(234, 179, 8, 0.7); }
+      100% { box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4); }
+    }
+
+    .orb-icon { width: 32px; height: 32px; fill: white; pointer-events: none; }
+
+    /* Status ring */
+    #mic-orb::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    #mic-orb.listening::after { border-color: rgba(34, 197, 94, 0.4); animation: ringPulse 2s ease infinite; }
+    @keyframes ringPulse {
+      0%, 100% { inset: -4px; opacity: 1; }
+      50% { inset: -12px; opacity: 0.3; }
+    }
+
+    /* ===== EXPANDED PANEL ===== */
+    #panel {
+      display: none;
+      background: #111827;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      overflow: hidden;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+    #widget.expanded #panel { display: flex; }
+    #widget.expanded #mic-orb { display: none; }
+
+    /* Header */
+    #panel-header {
+      padding: 14px 16px;
+      background: #1a2332;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: grab;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    #panel-header:active { cursor: grabbing; }
+
+    .header-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #e54c2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .header-info { flex: 1; }
+    .header-name { color: #fff; font-weight: 600; font-size: 15px; }
+    .header-status { color: #888; font-size: 12px; }
+    
+    .header-btn {
+      background: none; border: none; color: #888; font-size: 18px; 
+      cursor: pointer; padding: 4px 8px; border-radius: 8px;
+    }
+    .header-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+    /* Character selector */
+    #char-bar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      overflow-x: auto;
+      background: #0f1720;
+      scrollbar-width: none;
+    }
+    #char-bar::-webkit-scrollbar { display: none; }
+    
+    .char-chip {
+      flex-shrink: 0;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: #aaa;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .char-chip:hover { border-color: #e54c2a; color: #fff; }
+    .char-chip.active { background: #e54c2a; border-color: #e54c2a; color: #fff; }
+
+    /* Chat messages */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
+    }
+
+    .bubble {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.45;
+      animation: bubbleIn 0.25s ease;
+    }
+    @keyframes bubbleIn { from { opacity: 0; transform: translateY(6px); } }
+
+    .bubble.user { 
+      background: #1e3a2e; color: #a7f3d0; 
+      align-self: flex-end; border-bottom-right-radius: 4px; 
+    }
+    .bubble.assistant { 
+      background: #1e293b; color: #e2e8f0; 
+      align-self: flex-start; border-bottom-left-radius: 4px; 
+    }
+    .bubble.thinking {
+      background: #1e293b; color: #888; font-style: italic;
+      align-self: flex-start;
+    }
+
+    /* Bottom bar */
+    #bottom-bar {
+      padding: 12px;
+      background: #1a2332;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    #text-input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    #text-input::placeholder { color: #555; }
+    #text-input:focus { border-color: #e54c2a; }
+
+    #voice-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: #e54c2a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    #voice-btn:hover { background: #f05e3b; transform: scale(1.05); }
+    #voice-btn.listening { background: #22c55e; animation: orbPulse 1.5s ease infinite; }
+    #voice-btn svg { width: 22px; height: 22px; fill: white; }
+  </style>
+</head>
+<body>
+
+<div id="widget" class="collapsed">
+  <!-- Collapsed: just the orb -->
+  <button id="mic-orb" onmousedown="startDrag(event)" onclick="handleOrbClick(event)">
+    <svg class="orb-icon" viewBox="0 0 24 24">
+      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+    </svg>
+  </button>
+
+  <!-- Expanded: chat panel -->
+  <div id="panel">
+    <div id="panel-header" onmousedown="startDrag(event)">
+      <div class="header-avatar">🤖</div>
+      <div class="header-info">
+        <div class="header-name" id="char-name">Ed</div>
+        <div class="header-status" id="conn-status">Connected</div>
+      </div>
+      <button class="header-btn" onclick="stopAudio()" title="Stop speaking">⏹</button>
+      <button class="header-btn" onclick="collapse()" title="Minimise">—</button>
+    </div>
+
+    <div id="char-bar">
+      <div class="char-chip active" data-voice="jarvis" onclick="setVoice(this)">🤖 JARVIS</div>
+      <div class="char-chip" data-voice="spongebob" onclick="setVoice(this)">🧽 SpongeBob</div>
+      <div class="char-chip" data-voice="patrick" onclick="setVoice(this)">⭐ Patrick</div>
+      <div class="char-chip" data-voice="rick" onclick="setVoice(this)">🧪 Rick</div>
+      <div class="char-chip" data-voice="morty" onclick="setVoice(this)">😰 Morty</div>
+      <div class="char-chip" data-voice="cartman" onclick="setVoice(this)">🎩 Cartman</div>
+      <div class="char-chip" data-voice="mrkrabs" onclick="setVoice(this)">🦀 Mr Krabs</div>
+      <div class="char-chip" data-voice="squidward" onclick="setVoice(this)">🎵 Squidward</div>
+    </div>
+
+    <div id="messages"></div>
+
+    <div id="bottom-bar">
+      <input id="text-input" type="text" placeholder="Type or tap mic..." 
+             onkeydown="if(event.key==='Enter')sendText()">
+      <button id="voice-btn" onclick="toggleVoice()">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+          <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // === CONFIG ===
+  // Same origin - API and widget served from same server
+  const API_BASE = '';
+  const USER_ID = 'web-' + (localStorage.getItem('cpUserId') || (() => {
+    const id = Math.random().toString(36).substr(2, 12);
+    localStorage.setItem('cpUserId', id);
+    return id;
+  })());
+  
+  let currentVoice = localStorage.getItem('cpVoice') || 'jarvis';
+  let isListening = false;
+  let recognition = null;
+  let currentAudio = null;
+  let isDragging = false;
+  let dragOffset = { x: 0, y: 0 };
+  let hasDragged = false;
+  let silenceTimer = null;
+  let finalTranscript = '';
+
+  const widget = document.getElementById('widget');
+  const micOrb = document.getElementById('mic-orb');
+  const panel = document.getElementById('panel');
+  const messagesEl = document.getElementById('messages');
+  const textInput = document.getElementById('text-input');
+  const voiceBtn = document.getElementById('voice-btn');
+
+  // Restore voice selection
+  document.querySelectorAll('.char-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.voice === currentVoice);
+  });
+
+  // === DRAG ===
+  function startDrag(e) {
+    if (e.target.closest('button:not(#mic-orb):not(#panel-header)')) return;
+    isDragging = true;
+    hasDragged = false;
+    const rect = widget.getBoundingClientRect();
+    dragOffset.x = e.clientX - rect.left;
+    dragOffset.y = e.clientY - rect.top;
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
+  }
+  function onDrag(e) {
+    if (!isDragging) return;
+    hasDragged = true;
+    const x = e.clientX - dragOffset.x;
+    const y = e.clientY - dragOffset.y;
+    widget.style.left = x + 'px';
+    widget.style.top = y + 'px';
+    widget.style.right = 'auto';
+    widget.style.bottom = 'auto';
+  }
+  function stopDrag() {
+    isDragging = false;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+  }
+
+  // === EXPAND / COLLAPSE ===
+  function handleOrbClick(e) {
+    if (hasDragged) return; // Was a drag, not a click
+    widget.classList.remove('collapsed');
+    widget.classList.add('expanded');
+    textInput.focus();
+  }
+  function collapse() {
+    widget.classList.remove('expanded');
+    widget.classList.add('collapsed');
+    stopListening();
+  }
+
+  // === VOICE SELECTION ===
+  function setVoice(el) {
+    document.querySelectorAll('.char-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentVoice = el.dataset.voice;
+    localStorage.setItem('cpVoice', currentVoice);
+    document.getElementById('char-name').textContent = el.textContent.trim();
+  }
+
+  // === SPEECH RECOGNITION ===
+  function setupRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return null;
+    const rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = 'en-GB';
+    
+    rec.onresult = (e) => {
+      finalTranscript = '';
+      let interim = '';
+      for (let i = 0; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      textInput.value = finalTranscript + interim;
+      clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(() => {
+        if (isListening && finalTranscript.trim()) {
+          stopListening();
+          sendMessage(finalTranscript.trim());
+        }
+      }, 2000);
+    };
+    rec.onerror = () => stopListening();
+    rec.onend = () => { if (isListening) try { rec.start(); } catch {} };
+    return rec;
+  }
+
+  function toggleVoice() {
+    if (isListening) {
+      stopListening();
+      if (finalTranscript.trim()) sendMessage(finalTranscript.trim());
+    } else {
+      startListening();
+    }
+  }
+
+  function startListening() {
+    if (!recognition) recognition = setupRecognition();
+    if (!recognition) return;
+    finalTranscript = '';
+    textInput.value = '';
+    textInput.placeholder = '🎤 Listening...';
+    isListening = true;
+    voiceBtn.classList.add('listening');
+    micOrb.classList.add('listening');
+    try { recognition.start(); } catch {}
+  }
+
+  function stopListening() {
+    isListening = false;
+    clearTimeout(silenceTimer);
+    voiceBtn.classList.remove('listening');
+    micOrb.classList.remove('listening');
+    textInput.placeholder = 'Type or tap mic...';
+    try { recognition?.stop(); } catch {}
+  }
+
+  // === SEND MESSAGE ===
+  function sendText() {
+    const text = textInput.value.trim();
+    if (!text) return;
+    textInput.value = '';
+    sendMessage(text);
+  }
+
+  async function sendMessage(text) {
+    addBubble('user', text);
+    addBubble('thinking', '...');
+    micOrb.classList.add('thinking');
+
+    try {
+      const r = await fetch(`${API_BASE}/api/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: USER_ID, message: text })
+      });
+      const data = await r.json();
+      
+      // Remove thinking bubble
+      const thinking = messagesEl.querySelector('.thinking');
+      if (thinking) thinking.remove();
+
+      const reply = data.reply || data.text || data.message || 'No response';
+      addBubble('assistant', reply);
+
+      // Get TTS audio
+      micOrb.classList.remove('thinking');
+      micOrb.classList.add('speaking');
+      
+      const ttsR = await fetch(`${API_BASE}/api/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: reply, voice: currentVoice })
+      });
+      const ttsData = await ttsR.json();
+      
+      if (ttsData.audioUrl) {
+        playAudio(ttsData.audioUrl);
+      } else {
+        micOrb.classList.remove('speaking');
+      }
+    } catch (err) {
+      const thinking = messagesEl.querySelector('.thinking');
+      if (thinking) thinking.remove();
+      addBubble('assistant', 'Connection error — is ClawPhone API running?');
+      micOrb.classList.remove('thinking');
+    }
+  }
+
+  function addBubble(type, text) {
+    const div = document.createElement('div');
+    div.className = `bubble ${type}`;
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    while (messagesEl.children.length > 50) messagesEl.removeChild(messagesEl.firstChild);
+  }
+
+  // === AUDIO ===
+  function playAudio(url) {
+    stopAudio();
+    currentAudio = new Audio(API_BASE + url);
+    currentAudio.onended = () => { micOrb.classList.remove('speaking'); };
+    currentAudio.onerror = () => { micOrb.classList.remove('speaking'); };
+    currentAudio.play().catch(() => { micOrb.classList.remove('speaking'); });
+  }
+  function stopAudio() {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    micOrb.classList.remove('speaking');
+  }
+
+  // === KEYBOARD SHORTCUT ===
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target === document.body) {
+      e.preventDefault();
+      if (widget.classList.contains('collapsed')) handleOrbClick(e);
+      else toggleVoice();
+    }
+    if (e.code === 'Escape') collapse();
+  });
+</script>
+</body>
+</html>
